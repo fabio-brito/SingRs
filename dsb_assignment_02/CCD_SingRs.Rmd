@@ -97,19 +97,19 @@ combinerarecategories<-function(data_frame,mincount){
 
 table(CCDdata_A$Group.State)
 CCDdata_A<-fixNAs(CCDdata_A)
-CCddata_A<-combinerarecategories(CCDdata_A,10) #combine categories with <10 values in CCDdata into "Other"
+CCDdata_A<-combinerarecategories(CCDdata_A,10) #combine categories with <10 values in CCDdata into "Other"
 
 ```
 
 ```{r data_partition}
 set.seed(77850) 
-inTrain <- createDataPartition(y = CCDdata_A$Default_0, list = FALSE)
-training <- STCdata_A[ inTrain,]
-testing <- STCdata_A[ -inTrain,]
+inTrain <- createDataPartition(y = CCDdata_A$default.payment.next.month, list = FALSE)
+training <- CCDdata_A[ inTrain,]
+testing <- CCDdata_A[ -inTrain,]
 ```
 
 ```{r glm}
-model_logistic_glml <- glm(Default_0~ ., data=training, family="binomial"(link="logit"))
+model_logistic_glm <- glm(default.payment.next.month~ ., data=training, family="binomial"(link="logit"))
 summary(model_logistic_glm)
 
 model_logistic_stepwiseAIC<-stepAIC(model_logistic,direction = c("both"),trace = 1) #AIC stepwise
