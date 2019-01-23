@@ -119,9 +119,7 @@ logistic_classification<-as.factor(logistic_classification)
 ```
 
 ```{r glm_confusion_matrix}
-
 confusionMatrix(logistic_classification, testing$default.payment.next.month, positive = "1")
-
 ```
 
 ####ROC Curve
