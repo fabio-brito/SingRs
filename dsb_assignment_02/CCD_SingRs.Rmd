@@ -17,6 +17,17 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r data_loading}
 CCDdata_A<-read.csv(file.choose(), na.strings=c(""," ","NA"), header=TRUE) # Load the datafile to R
 str(CCDdata_A) # See if some data types were misclassified when importing data from CSV
+# Reclassify misclassified data types
+CCDdata_A$SEX <- as.factor(CCDdata_A$SEX)
+CCDdata_A$EDUCATION <- as.factor(CCDdata_A$EDUCATION)
+CCDdata_A$MARRIAGE <- as.factor(CCDdata_A$MARRIAGE)
+CCDdata_A$PAY_0 <- as.factor(CCDdata_A$PAY_0)
+CCDdata_A$PAY_2 <- as.factor(CCDdata_A$PAY_2)
+CCDdata_A$PAY_3 <- as.factor(CCDdata_A$PAY_3)
+CCDdata_A$PAY_4 <- as.factor(CCDdata_A$PAY_4)
+CCDdata_A$PAY_5 <- as.factor(CCDdata_A$PAY_5)
+CCDdata_A$PAY_6 <- as.factor(CCDdata_A$PAY_6)
+CCDdata_A$default.payment.next.month <- as.factor(CCDdata_A$default.payment.next.month)
 ```
 
 ```{r data_cleaning}
@@ -278,5 +289,3 @@ plotLift(logistic_probabilities, testing$Retained.in.2012., cumulative = TRUE, n
 
 >>>>>>> ae9c4a2cb56bc947bfe4e3c3772980e2fb2240f6
 
-
-####Test Alana git
