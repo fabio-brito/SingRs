@@ -3,6 +3,10 @@ title: "Credit_cards_defaults"
 output: html_document
 ---
 
+if("pacman" %in% rownames(installed.packages()) == FALSE) {install.packages("pacman")} #Check if you have universal installer package, install if not
+
+pacman::p_load("caret","ROCR","lift","glmnet","MASS","e1071") #Check, and if needed install the necessary packages
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
