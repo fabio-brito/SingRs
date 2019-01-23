@@ -19,7 +19,7 @@ str(CCDdata_A) # See if some data types were misclassified when importing data f
 
 ```{r data_asfactors}
 CCDdata_A$ID <- as.factor(CCDdata_A$ID)
-CCDdata_A$LIMIT_BAL <- as.factor(CCDdata_A$LIMIT_BAL)
+CCDdata_A$LIMIT_BAL <- as.integer(CCDdata_A$LIMIT_BAL)
 CCDdata_A$SEX <- as.factor(CCDdata_A$SEX)
 CCDdata_A$MARRIAGE <- as.factor(CCDdata_A$MARRIAGE) 
 CCDdata_A$EDUCATION <- as.factor(CCDdata_A$EDUCATION)
