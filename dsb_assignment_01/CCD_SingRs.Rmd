@@ -13,7 +13,7 @@ pacman::p_load("caret","ROCR","lift","glmnet","MASS","e1071", "caret","ROCR","li
 ```
 
 ```{r data_loading}
-CCDdata_A<-read.csv(file.choose(), na.strings=c(""," ","NA"), header=TRUE) # Load the datafile to R
+CCDdata_A<-read.csv("UCI_credit_Card.csv", na.strings=c(""," ","NA"), header=TRUE) # Load the datafile to R
 str(CCDdata_A) # See if some data types were misclassified when importing data from CSV
 ```
 
@@ -82,24 +82,24 @@ combinerarecategories<-function(data_frame,mincount){
 
 ```{r applying functions}
 
-table(CCDdata_A$Group.State)
+table(CCDdata_A$default.payment.next.month)
 CCDdata_A<-fixNAs(CCDdata_A)
-CCddata_A<-combinerarecategories(CCDdata_A,10) #combine categories with <10 values in CCDdata into "Other"
+CCDdata_A<-combinerarecategories(CCDdata_A,10) #combine categories with <10 values in CCDdata into "Other"
 
 ```
 
 ```{r data_partition}
 set.seed(77850) 
-inTrain <- createDataPartition(y = CCDdata_A$Default_0, list = FALSE)
-training <- STCdata_A[ inTrain,]
-testing <- STCdata_A[ -inTrain,]
+inTrain <- createDataPartition(y = CCDdata_A$default.payment.next.month, list = FALSE)
+training <- CCDdata_A[ inTrain,]
+testing <- CCDdata_A[ -inTrain,]
 ```
 
 ```{r glm}
-model_logistic_glml <- glm(Default_0~ ., data=training, family="binomial"(link="logit"))
+model_logistic_glm <- glm(default.payment.next.month~ ., data=training, family="binomial"(link="logit"))
 summary(model_logistic_glm)
 
-model_logistic_stepwiseAIC<-stepAIC(model_logistic,direction = c("both"),trace = 1) #AIC stepwise
+model_logistic_stepwiseAIC<-stepAIC(model_logistic_glm,direction = c("both"),trace = 1) #AIC stepwise
 summary(model_logistic_stepwiseAIC)
 
 par(mfrow=c(1,4))
@@ -120,18 +120,14 @@ logistic_classification<-as.factor(logistic_classification)
 
 ```{r glm_confusion_matrix}
 
-confusionMatrix(logistic_classification,testing$Default.0,positive = "1")
-
-confusionMatrix(logistic_classification,testing$Retained.in.2012.,positive = "1")
+confusionMatrix(logistic_classification, testing$default.payment.next.month, positive = "1")
 
 ```
 
 ####ROC Curve
 ```{r glm_ROC}
 
-logistic_ROC_prediction <- prediction(logistic_probabilities, testing$Default.0)
-
-logistic_ROC_prediction <- prediction(logistic_probabilities, testing$Retained.in.2012.)
+logistic_ROC_prediction <- prediction(logistic_probabilities, testing$default.payment.next.month)
 
 logistic_ROC <- performance(logistic_ROC_prediction,"tpr","fpr") #Create ROC curve data
 plot(logistic_ROC) #Plot ROC curve
@@ -147,7 +143,7 @@ logistic_auc_testing #Display AUC value: 90+% - excellent, 80-90% - very good, 7
 #### Lift chart
 ```{r glm_plotLift}
 
-plotLift(logistic_probabilities, testing$Default.0, cumulative = TRUE, n.buckets = 10) # Plot Lift chart
+plotLift(logistic_probabilities, testing$default.payment.next.month, cumulative = TRUE, n.buckets = 10) # Plot Lift chart
 ```
 
 #CTREE
