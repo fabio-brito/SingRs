@@ -3,6 +3,13 @@ title: "Credit_cards_defaults"
 output: html_document
 ---
 
+<<<<<<< HEAD
+=======
+if("pacman" %in% rownames(installed.packages()) == FALSE) {install.packages("pacman")} #Check if you have universal installer package, install if not
+
+pacman::p_load("caret","ROCR","lift","glmnet","MASS","e1071") #Check, and if needed install the necessary packages
+
+>>>>>>> ae9c4a2cb56bc947bfe4e3c3772980e2fb2240f6
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -105,17 +112,29 @@ par(mfrow=c(1,1))
 ```{r glm_predictions}
 logistic_probabilities<-predict(model_logistic_stepwiseAIC,newdata=testing,type="response") #Predict probabilities
 logistic_classification<-rep("1",500)
+<<<<<<< HEAD
 logistic_classification[logistic_probabilities<0.6073]="0" #Predict classification using 0.6073 threshold. Why 0.6073 - that's the average probability of being retained in the data. An alternative code: logistic_classification <- as.integer(logistic_probabilities > mean(testing$Default.0 == "1"))
+=======
+logistic_classification[logistic_probabilities<0.6073]="0" #Predict classification using 0.6073 threshold. Why 0.6073 - that's the average probability of being retained in the data. An alternative code: logistic_classification <- as.integer(logistic_probabilities > mean(testing$Retained.in.2012. == "1"))
+>>>>>>> ae9c4a2cb56bc947bfe4e3c3772980e2fb2240f6
 logistic_classification<-as.factor(logistic_classification)
 ```
 
 ```{r glm_confusion_matrix}
+<<<<<<< HEAD
 confusionMatrix(logistic_classification,testing$Default.0,positive = "1")
+=======
+confusionMatrix(logistic_classification,testing$Retained.in.2012.,positive = "1")
+>>>>>>> ae9c4a2cb56bc947bfe4e3c3772980e2fb2240f6
 ```
 
 ####ROC Curve
 ```{r glm_ROC}
+<<<<<<< HEAD
 logistic_ROC_prediction <- prediction(logistic_probabilities, testing$Default.0)
+=======
+logistic_ROC_prediction <- prediction(logistic_probabilities, testing$Retained.in.2012.)
+>>>>>>> ae9c4a2cb56bc947bfe4e3c3772980e2fb2240f6
 logistic_ROC <- performance(logistic_ROC_prediction,"tpr","fpr") #Create ROC curve data
 plot(logistic_ROC) #Plot ROC curve
 ```
@@ -129,6 +148,7 @@ logistic_auc_testing #Display AUC value: 90+% - excellent, 80-90% - very good, 7
 
 #### Lift chart
 ```{r glm_plotLift}
+<<<<<<< HEAD
 plotLift(logistic_probabilities, testing$Default.0, cumulative = TRUE, n.buckets = 10) # Plot Lift chart
 ```
 
@@ -251,3 +271,9 @@ XGboost_auc_testing #Display AUC value: 90+% - excellent, 80-90% - very good, 70
 #### Lift chart
 plotLift(XGboost_prediction, testing$Default.0, cumulative = TRUE, n.buckets = 10) # Plot Lift chart
 ```
+=======
+plotLift(logistic_probabilities, testing$Retained.in.2012., cumulative = TRUE, n.buckets = 10) # Plot Lift chart
+```
+
+
+>>>>>>> ae9c4a2cb56bc947bfe4e3c3772980e2fb2240f6
