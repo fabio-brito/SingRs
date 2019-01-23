@@ -277,3 +277,6 @@ plotLift(logistic_probabilities, testing$Retained.in.2012., cumulative = TRUE, n
 
 
 >>>>>>> ae9c4a2cb56bc947bfe4e3c3772980e2fb2240f6
+
+
+####Test Alana git
