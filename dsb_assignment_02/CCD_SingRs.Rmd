@@ -9,12 +9,22 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r packages, echo=FALSE}
 if("pacman" %in% rownames(installed.packages()) == FALSE) {install.packages("pacman")} 
-pacman::p_load("caret","ROCR","lift","glmnet","MASS","e1071", "caret","ROCR","lift","randomForest", "xgboost") 
+pacman::p_load("caret","ROCR","lift","glmnet","MASS","e1071", "randomForest", "xgboost", "party") 
 ```
 
 ```{r data_loading}
 CCDdata_A<-read.csv("UCI_credit_Card.csv", na.strings=c(""," ","NA"), header=TRUE) # Load the datafile to R
 str(CCDdata_A) # See if some data types were misclassified when importing data from CSV
+```
+
+```{r data_asfactors}
+CCDdata_A$ID <- as.factor(CCDdata_A$ID)
+CCDdata_A$LIMIT_BAL <- as.factor(CCDdata_A$LIMIT_BAL)
+CCDdata_A$SEX <- as.factor(CCDdata_A$SEX)
+CCDdata_A$MARRIAGE <- as.factor(CCDdata_A$MARRIAGE) 
+CCDdata_A$EDUCATION <- as.factor(CCDdata_A$EDUCATION)
+#CCDdata_A$AGE <- as.factor(CCDdata_A$AGE)
+CCDdata_A$default.payment.next.month <- as.factor(CCDdata_A$default.payment.next.month)
 ```
 
 ```{r data_cleaning}
@@ -146,7 +156,7 @@ plotLift(logistic_probabilities, testing$default.payment.next.month, cumulative 
 
 #CTREE
 ```{r ctree}
-ctree_tree<-ctree(Default.0~.,data=training) #Run ctree on training data
+ctree_tree<-ctree(default.payment.next.month~.,data=training) #Run ctree on training data
 plot(ctree_tree, gp = gpar(fontsize = 8)) #Plotting the tree (adjust fontsize if needed)
 
 ctree_probabilities<-predict(ctree_tree,newdata=testing,type="prob") #Predict probabilities
