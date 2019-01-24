@@ -268,7 +268,4 @@ XGboost_auc_testing #Display AUC value: 90+% - excellent, 80-90% - very good, 70
 
 #### Lift chart
 plotLift(XGboost_prediction, testing$default.payment.next.month, cumulative = TRUE, n.buckets = 10) # Plot Lift chart
-
-
-plotLift(logistic_probabilities, testing$default.payment.next.month, cumulative = TRUE, n.buckets = 10) # Plot Lift chart
 ```
