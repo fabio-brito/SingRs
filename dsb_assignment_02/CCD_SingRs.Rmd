@@ -23,6 +23,7 @@ table(CCDdata_A$default_0)
 
 ##Fixing data from numeric to factors
 ```{r data_asfactors}
+CCDdata_A$ID<-NULL #remove the ID column
 CCDdata_A$SEX <- as.factor(CCDdata_A$SEX)
 CCDdata_A$EDUCATION <- as.factor(CCDdata_A$EDUCATION)
 CCDdata_A$MARRIAGE <- as.factor(CCDdata_A$MARRIAGE)
@@ -32,7 +33,7 @@ CCDdata_A$PAY_3 <- as.factor(CCDdata_A$PAY_3)
 CCDdata_A$PAY_4 <- as.factor(CCDdata_A$PAY_4)
 CCDdata_A$PAY_5 <- as.factor(CCDdata_A$PAY_5)
 CCDdata_A$PAY_6 <- as.factor(CCDdata_A$PAY_6)
-CCDdata_A$ID <- as.factor(CCDdata_A$ID)
+#CCDdata_A$ID <- as.factor(CCDdata_A$ID)
 CCDdata_A$LIMIT_BAL <- as.integer(CCDdata_A$LIMIT_BAL)
 #CCDdata_A$AGE <- as.factor(CCDdata_A$AGE)
 CCDdata_A$default_0 <- as.factor(CCDdata_A$default_0)
