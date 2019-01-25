@@ -14,9 +14,9 @@ library("readxl")
 ```
 
 ```{r data_loading}
-CCDdata_A <- read_excel("DSB A2 -- credit data.xlsx", sheet =1)
+CCDdata_A <- read_excel("DSB A2 -- credit data.xlsx", sheet =1, col_names = TRUE, na = '')
 str(CCDdata_A) # See if some data types were misclassified when importing data from CSV
-
+table(CCDdata_A$default_0)
 ```
 
 ```{r data_asfactors}
@@ -102,11 +102,8 @@ combinerarecategories<-function(data_frame,mincount){
 #Cleaning dataset from NAs and combining rare categories
 
 ```{r applying functions}
-
-table(CCDdata_A$default_0)
 CCDdata_A<-fixNAs(CCDdata_A)
 CCDdata_A<-combinerarecategories(CCDdata_A,10) #combine categories with <10 values in CCDdata into "Other"
-
 ```
 
 ```{r data_partition}
