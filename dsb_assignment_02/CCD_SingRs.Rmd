@@ -5,20 +5,20 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-```
-
-```{r packages, echo=FALSE}
 if("pacman" %in% rownames(installed.packages()) == FALSE) {install.packages("pacman")} 
 pacman::p_load("xlsx","caret","ROCR","lift","glmnet","MASS","e1071", "randomForest", "xgboost", "party", "partykit","ROCR","lift","rpart","e1071", "readxl") 
 library("readxl")
 ```
 
+#Setting the data
+##Loading the data
 ```{r data_loading}
 CCDdata_A <- read_excel("DSB A2 -- credit data.xlsx", sheet =1, col_names = TRUE, na = '')
 str(CCDdata_A) # See if some data types were misclassified when importing data from CSV
 table(CCDdata_A$default_0)
 ```
 
+##Fixing data from numeric to factors
 ```{r data_asfactors}
 CCDdata_A$SEX <- as.factor(CCDdata_A$SEX)
 CCDdata_A$EDUCATION <- as.factor(CCDdata_A$EDUCATION)
@@ -99,11 +99,12 @@ combinerarecategories<-function(data_frame,mincount){
 
 ```
 
-#Cleaning dataset from NAs and combining rare categories
-
-```{r applying functions}
+##Cleaning dataset from NAs and combining rare categories
+FixNA's
+combine categories with <10 values in CCDdata into "Other"
+```{r applying functions, echo=FALSE}
 CCDdata_A<-fixNAs(CCDdata_A)
-CCDdata_A<-combinerarecategories(CCDdata_A,10) #combine categories with <10 values in CCDdata into "Other"
+CCDdata_A<-combinerarecategories(CCDdata_A,10)
 ```
 ##Data partition
 ```{r data_partition}
@@ -112,6 +113,7 @@ inTrain <- createDataPartition(y = CCDdata_A$default_0, list = FALSE)
 training <- CCDdata_A[ inTrain,]
 testing <- CCDdata_A[ -inTrain,]
 ```
+
 #First model - glm
 ```{r glm}
 model_logistic_glm <- glm(default_0~ ., data=training, family="binomial"(link="logit"))
@@ -124,37 +126,28 @@ par(mfrow=c(1,4))
 plot(model_logistic_stepwiseAIC)
 par(mfrow=c(1,1))
 ```
-
+##GLM model prediction
 ```{r glm_predictions}
 logistic_probabilities<-predict(model_logistic_stepwiseAIC,newdata=testing,type="response") #Predict probabilities
 logistic_classification<-rep("1",500)
 
-
 logistic_classification[logistic_probabilities<0.6073]="0" #Predict classification using 0.6073 threshold. Why 0.6073 - that's the average probability of being retained in the data. An alternative code: logistic_classification <- as.integer(logistic_probabilities > mean(testing$Default.0 == "1"))
-
-logistic_classification[logistic_probabilities<0.6073]="0" #Predict classification using 0.6073 threshold. Why 0.6073 - that's the average probability of being retained in the data. An alternative code: logistic_classification <- as.integer(logistic_probabilities > mean(testing$Retained.in.2012. == "1"))
-
-
-
-logistic_classification[logistic_probabilities<0.6073]="0" #Predict classification using 0.6073 threshold. Why 0.6073 - that's the average probability of being retained in the data. An alternative code: logistic_classification <- as.integer(logistic_probabilities > mean(testing$Default.0 == "1"))
-
-logistic_classification[logistic_probabilities<0.6073]="0" #Predict classification using 0.6073 threshold. Why 0.6073 - that's the average probability of being retained in the data. An alternative code: logistic_classification <- as.integer(logistic_probabilities > mean(testing$Retained.in.2012. == "1"))
 
 logistic_classification<-as.factor(logistic_classification)
 ```
-
+##GLM Confusion matrix
 ```{r glm_confusion_matrix}
 confusionMatrix(logistic_classification, testing$default_0, positive = "1")
 ```
 
-####ROC Curve
+##GLM ROC Curve
 ```{r glm_ROC}
 logistic_ROC_prediction <- prediction(logistic_probabilities, testing$default_0)
 logistic_ROC <- performance(logistic_ROC_prediction,"tpr","fpr") #Create ROC curve data
 plot(logistic_ROC) #Plot ROC curve
 ```
 
-####AUC (area under curve)
+##GLM AUC (area under curve)
 Create AUC data
 Calculate AUC
 Display AUC value: 90+% - excellent, 80-90% - very good, 70-80% - good, 60-70% - so so, below 60% - not much value
@@ -164,7 +157,7 @@ logistic_auc_testing <- as.numeric(auc.tmp@y.values)
 logistic_auc_testing
 ```
 
-#### Lift chart
+##GLM Lift chart
 ```{r glm_plotLift}
 plotLift(logistic_probabilities, testing$default_0, cumulative = TRUE, n.buckets = 10)
 ```
@@ -172,7 +165,7 @@ plotLift(logistic_probabilities, testing$default_0, cumulative = TRUE, n.buckets
 #CTREE
 Plotting the tree (adjust fontsize if needed)
 Predict probabilities
-#Predict classification using 0.6073 threshold. Why 0.6073 - that's the average probability of being retained in the data. 
+Predict classification using 0.6073 threshold. Why 0.6073 - that's the average probability of being retained in the data. 
 
 ```{r ctree}
 ctree_tree<-ctree(default_0~.,data=training) 
@@ -182,7 +175,7 @@ ctree_classification<-rep("1",500)
 ctree_classification[ctree_probabilities[,2]<0.6073]="0" #An alternative code: logistic_classification <- as.integer(logistic_probabilities > mean(testing$Default.0 == "1"))
 ctree_classification<-as.factor(ctree_classification)
 ```
-
+##CTREE confustion matrix
 ```{r ctree_confusion_matrix}
 confusionMatrix(ctree_classification, testing$default_0,positive = "1")
 ```
@@ -195,7 +188,6 @@ As a rule of thumb pick up the largest cp which does not give a substantial drop
 Prun the tree. Play with cp to see how the resultant tree changes
 Plotting the tree (adjust fontsize if needed)
 ```{r rpart}
-
 CART_cp = rpart.control(cp = 0.0005)
 rpart_tree<-rpart(default_0~.,data=training, method="class", control=CART_cp)
 printcp(rpart_tree) 
@@ -288,3 +280,15 @@ XGboost_auc_testing #Display AUC value: 90+% - excellent, 80-90% - very good, 70
 
 plotLift(XGboost_prediction, testing$default_0, cumulative = TRUE, n.buckets = 10) # Plot Lift chart
 ```
+
+#Choosing best model by comparing AIC
+
+#Applying best model on new data
+Creating dataset with one column 
+
+#Calculating potential profit
+In other words, for each client in the pilot, if the credit is issued and repaid, then the bank earns a profit of 25,000*2% + 1,000 = 1,500; if the credit is granted but the client defaults, then the bank loses 25,000 - 20,000 = 5,000? And if the credit is not issued, then the profit=loss=0.
+
+#Which three of 1 000 pilot clients are most likely to repay the loan if it were granted to them?
+
+#Which three of 1 000 pilot clients are least likely to repay the loan if it were granted to them?  
