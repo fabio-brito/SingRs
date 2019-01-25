@@ -221,39 +221,52 @@ print(model_forest)
 plot(model_forest)
 importance(model_forest)
 varImpPlot(model_forest)
+```
 
+##Random forest predictions
+
+```{r rf_predictions}
 ###Finding predicitons: probabilities and classification
 forest_probabilities<-predict(model_forest,newdata=testing,type="prob") #Predict probabilities -- an array with 2 columns: for not retained (class 0) and for retained (class 1)
 forest_classification<-rep("1",500)
 forest_classification[forest_probabilities[,2]<0.5]="0" #Predict classification using 0.5 threshold. Why 0.5 and not 0.6073? Use the same as in cutoff above
 forest_classification<-as.factor(forest_classification)
-
-confusionMatrix(forest_classification,testing$default_0, positive="1") #Display confusion matrix. Note, confusion matrix actually displays a better accuracy with threshold of 50%
-
 #There is also a "shortcut" forest_prediction<-predict(model_forest,newdata=testing, type="response") 
 #But it by default uses threshold of 50%: actually works better (more accuracy) on this data
+```
 
+## RF Confusion matrix
+Display confusion matrix. Note, confusion matrix actually displays a better accuracy with threshold of 50%
+```{r rf_cf}
+confusionMatrix(forest_classification,testing$default_0, positive="1") #
+```
 
-####ROC Curve
+##ROC Curve
+```{r rf_roc}
 forest_ROC_prediction <- prediction(forest_probabilities[,2], testing$default_0) #Calculate errors
 forest_ROC <- performance(forest_ROC_prediction,"tpr","fpr") #Create ROC curve data
 plot(forest_ROC) #Plot ROC curve
+```
 
-####AUC (area under curve)
+##AUC (area under curve)
+```{r rf_auc}
 AUC.tmp <- performance(forest_ROC_prediction,"auc") #Create AUC data
 forest_AUC <- as.numeric(AUC.tmp@y.values) #Calculate AUC
 forest_AUC #Display AUC value: 90+% - excellent, 80-90% - very good, 70-80% - good, 60-70% - so so, below 60% - not much value
+```
 
-#### Lift chart
+##Lift chart
+```{r rf_lift}
 plotLift(forest_probabilities[,2],  testing$default_0, cumulative = TRUE, n.buckets = 10) # Plot Lift chart
+```
 
-### An alternative way is to plot a Lift curve not by buckets, but on all data points
+###An alternative way is to plot a Lift curve not by buckets, but on all data points
+```{r rf_lift_alternative}
 Lift_forest <- performance(forest_ROC_prediction,"lift","rpp")
 plot(Lift_forest)
 ```
 
 #xgboost
-
 ```{r xgboost}
 training.x <-model.matrix(default_0~ ., data = training)
 testing.x <-model.matrix(default_0~ ., data = testing)
@@ -264,22 +277,30 @@ model_XGboost<-xgboost(data = data.matrix(training.x[,-1]),
                        max_depth = 20, 
                        nround=50, 
                        objective = "binary:logistic")
+```
 
-XGboost_prediction<-predict(model_XGboost,newdata=testing.x[,-1], type="response") #Predict classification (for confusion matrix)
+##Predict classification (for confusion matrix)
+```{r xgb_predictions}
+XGboost_prediction<-predict(model_XGboost,newdata=testing.x[,-1], type="response") 
+```
+
+```{r xgb_cf}
 confusionMatrix(as.factor(ifelse(XGboost_prediction>0.6073,1,0)),testing$default_0,positive="1") #Display confusion matrix
-
-####ROC Curve
+```
+##ROC Curve
+```{r xgb_roc}
 XGboost_pred_testing <- prediction(XGboost_prediction, testing$default_0) #Calculate errors
 XGboost_ROC_testing <- performance(XGboost_pred_testing,"tpr","fpr") #Create ROC curve data
 plot(XGboost_ROC_testing) #Plot ROC curve
-
-####AUC
+```
+##AUC
+```{r xgb_auc}
 auc.tmp <- performance(XGboost_pred_testing,"auc") #Create AUC data
 XGboost_auc_testing <- as.numeric(auc.tmp@y.values) #Calculate AUC
 XGboost_auc_testing #Display AUC value: 90+% - excellent, 80-90% - very good, 70-80% - good, 60-70% - so so, below 60% - not much value
-
-#### Lift chart
-
+```
+##Lift chart
+```{r xgb_lc}
 plotLift(XGboost_prediction, testing$default_0, cumulative = TRUE, n.buckets = 10) # Plot Lift chart
 ```
 
