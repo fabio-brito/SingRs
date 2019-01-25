@@ -6,11 +6,13 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 if("pacman" %in% rownames(installed.packages()) == FALSE) {install.packages("pacman")} 
-pacman::p_load("xlsx","caret","ROCR","lift","glmnet","MASS","e1071", "randomForest", "xgboost", "party", "partykit","ROCR","lift","rpart","e1071", "readxl", "tibble") 
+pacman::p_load("xlsx","caret","ROCR","lift","glmnet","MASS","e1071", "randomForest", "xgboost", "party", "partykit","ROCR","lift","rpart","e1071", "readxl", "tibble", "plotly", "scales") 
 library("readxl")
 library("tibble")
+library("plotly")
+library("scales")
 ```
-
+\pagebreak
 #Setting the data
 ##Loading the data
 ```{r data_loading}
@@ -113,6 +115,7 @@ training <- CCDdata_A[ inTrain,]
 testing <- CCDdata_A[ -inTrain,]
 ```
 
+\pagebreak
 #First model - glm
 ```{r glm}
 model_logistic_glm <- glm(default_0~., data=training, family="binomial"(link="logit"))
@@ -136,7 +139,8 @@ logistic_classification<-as.factor(logistic_classification)
 ```
 ##GLM Confusion matrix
 ```{r glm_confusion_matrix}
-confusionMatrix(logistic_classification, testing$default_0, positive = "1")
+glm_cm<-confusionMatrix(logistic_classification, testing$default_0, positive = "1")
+glm_cm
 ```
 
 ##GLM ROC Curve
@@ -161,11 +165,11 @@ logistic_auc_testing
 plotLift(logistic_probabilities, testing$default_0, cumulative = TRUE, n.buckets = 10)
 ```
 
+\pagebreak
 #CTREE
 Plotting the tree (adjust fontsize if needed)
 Predict probabilities
 Predict classification using 0.6073 threshold. Why 0.6073 - that's the average probability of being retained in the data. 
-
 ```{r ctree}
 ctree_tree<-ctree(default_0~.,data=training) 
 plot(ctree_tree, gp = gpar(fontsize = 8)) 
@@ -176,9 +180,11 @@ ctree_classification<-as.factor(ctree_classification)
 ```
 ##CTREE confustion matrix
 ```{r ctree_confusion_matrix}
-confusionMatrix(ctree_classification, testing$default_0,positive = "1")
+ctree_cm<-confusionMatrix(ctree_classification, testing$default_0,positive = "1")
+ctree_cm
 ```
 
+\pagebreak
 # RPART
 The rpart method has an important "complexity parameter", cp, which determines how big the tree is.  
 Run ctree on training data
@@ -193,22 +199,44 @@ printcp(rpart_tree)
 plotcp(rpart_tree)
 prunned_rpart_tree<-prune(rpart_tree, cp=0.007)
 plot(as.party(prunned_rpart_tree), type = "extended",gp = gpar(fontsize = 7))
-
-rpart_prediction_class<-predict(prunned_rpart_tree,newdata=testing, type="class") #Predict classification (for confusion matrix)
-confusionMatrix(rpart_prediction_class,testing$default_0,positive = "1") #Display confusion matrix
-
-rpart_probabilities_testing <-predict(prunned_rpart_tree,newdata=testing,type = "prob") #Predict probabilities
-rpart_pred_testing <- prediction(rpart_probabilities_testing[,2], testing$default_0) #Calculate errors
-rpart_ROC_testing <- performance(rpart_pred_testing,"tpr","fpr") #Create ROC curve data
-plot(rpart_ROC_testing) #Plot ROC curve
-
-auc.tmp <- performance(rpart_pred_testing,"auc") #Create AUC data
-rpart_auc_testing <- as.numeric(auc.tmp@y.values) #Calculate AUC
-rpart_auc_testing #Display AUC value
-
-plotLift(rpart_prediction_class,  testing$default_0, cumulative = TRUE, n.buckets = 10) # Plot Lift chart
 ```
 
+Predict classification (for confusion matrix)
+```{r rpart_prediction}
+rpart_prediction_class<-predict(prunned_rpart_tree,newdata=testing, type="class")
+```
+##Confusion matrix
+```{r rpart_cm}
+rpart_cm<-confusionMatrix(rpart_prediction_class,testing$default_0,positive = "1")
+rpart_cm
+```
+
+##Predict probabilities and calculate errors
+```{r rpart_prediction_prob}
+rpart_probabilities_testing <-predict(prunned_rpart_tree,newdata=testing,type = "prob")
+rpart_pred_testing <- prediction(rpart_probabilities_testing[,2], testing$default_0)
+```
+
+##ROC
+```{r rpart_roc}
+rpart_ROC_testing <- performance(rpart_pred_testing,"tpr","fpr")
+plot(rpart_ROC_testing)
+```
+
+##AUC
+```{r rpart_auc}
+auc.tmp <- performance(rpart_pred_testing,"auc") 
+rpart_auc_testing <- as.numeric(auc.tmp@y.values)
+rpart_auc_testing
+```
+
+##Lift
+```{r rpart_lift}
+plotLift(rpart_prediction_class,  testing$default_0, cumulative = TRUE, n.buckets = 10)
+```
+
+
+\pagebreak
 #Random Forest
 cutoffs need to be determined for class 0 and class 1. By default 50/50, but need not be those necessarily
 
@@ -235,7 +263,8 @@ forest_classification<-as.factor(forest_classification)
 ## RF Confusion matrix
 Display confusion matrix. Note, confusion matrix actually displays a better accuracy with threshold of 50%
 ```{r rf_cf}
-confusionMatrix(forest_classification,testing$default_0, positive="1") #
+rf_cm<-confusionMatrix(forest_classification,testing$default_0, positive="1")
+rf_cm
 ```
 
 ##ROC Curve
@@ -263,6 +292,8 @@ Lift_forest <- performance(forest_ROC_prediction,"lift","rpp")
 plot(Lift_forest)
 ```
 
+
+\pagebreak
 #xgboost
 ```{r xgboost}
 training.x <-model.matrix(default_0~ ., data = training)
@@ -281,8 +312,10 @@ model_XGboost<-xgboost(data = data.matrix(training.x[,-1]),
 XGboost_prediction<-predict(model_XGboost,newdata=testing.x[,-1], type="response") 
 ```
 
-```{r xgb_cf}
-confusionMatrix(as.factor(ifelse(XGboost_prediction>0.6073,1,0)),testing$default_0,positive="1") #Display confusion matrix
+###Display confusion matrix
+```{r xgb_cm}
+xgb_cm<-confusionMatrix(as.factor(ifelse(XGboost_prediction>0.6073,1,0)),testing$default_0,positive="1")
+xgb_cm
 ```
 ##ROC Curve
 ```{r xgb_roc}
@@ -301,14 +334,37 @@ XGboost_auc_testing #Display AUC value: 90+% - excellent, 80-90% - very good, 70
 plotLift(XGboost_prediction, testing$default_0, cumulative = TRUE, n.buckets = 10) # Plot Lift chart
 ```
 
-#Choosing best model by comparing AIC
+\pagebreak
+#Choosing best model by comparing accuracy from all confusion matricies
+```{r best_model}
+best_cm <- data.frame("Model"=c("glm","rpart","ctree","Random Forest","xgboost"), "Accuracy"=c(glm_cm$overall[1],rpart_cm$overall[1],ctree_cm$overall[1],rf_cm$overall[1],xgb_cm$overall[1]))
 
+plot_ly(x=best_cm$Model, y=best_cm$Accuracy, type="bar", text = percent(best_cm$Accuracy), textposition = 'outside')%>%
+        layout(yaxis = list(range = c(0.7999, 0.85)))
+
+```
+
+\pagebreak
 #Applying best model on new data
-Creating dataset with one column 
+Creating dataset with one column
+```{r best_model_application}
+
+```
 
 #Calculating potential profit
 In other words, for each client in the pilot, if the credit is issued and repaid, then the bank earns a profit of 25,000*2% + 1,000 = 1,500; if the credit is granted but the client defaults, then the bank loses 25,000 - 20,000 = 5,000? And if the credit is not issued, then the profit=loss=0.
+```{r profit}
+
+```
+
 
 #Which three of 1 000 pilot clients are most likely to repay the loan if it were granted to them?
+```{r good_clients}
+
+```
+
 
 #Which three of 1 000 pilot clients are least likely to repay the loan if it were granted to them?  
+```{r bad_clients}
+
+```
