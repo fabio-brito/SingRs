@@ -10,12 +10,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r packages, echo=FALSE}
 if("pacman" %in% rownames(installed.packages()) == FALSE) {install.packages("pacman")} 
 pacman::p_load("xlsx","caret","ROCR","lift","glmnet","MASS","e1071", "randomForest", "xgboost", "party", "partykit","ROCR","lift","rpart","e1071", "readxl") 
+library("readxl")
 ```
 
 ```{r data_loading}
-library("readxl")
-read.exc
-CCDdata_A<-read.excel("DSB A2 -- credit data.xlsx", sheet = 1) # Load the datafile to R
+CCDdata_A <- read_excel("DSB A2 -- credit data.xlsx", sheet =1)
 str(CCDdata_A) # See if some data types were misclassified when importing data from CSV
 
 ```
@@ -24,7 +23,7 @@ str(CCDdata_A) # See if some data types were misclassified when importing data f
 CCDdata_A$SEX <- as.factor(CCDdata_A$SEX)
 CCDdata_A$EDUCATION <- as.factor(CCDdata_A$EDUCATION)
 CCDdata_A$MARRIAGE <- as.factor(CCDdata_A$MARRIAGE)
-CCDdata_A$PAY_0 <- as.factor(CCDdata_A$PAY_0)
+CCDdata_A$PAY_1 <- as.factor(CCDdata_A$PAY_1)
 CCDdata_A$PAY_2 <- as.factor(CCDdata_A$PAY_2)
 CCDdata_A$PAY_3 <- as.factor(CCDdata_A$PAY_3)
 CCDdata_A$PAY_4 <- as.factor(CCDdata_A$PAY_4)
@@ -148,73 +147,64 @@ logistic_classification<-as.factor(logistic_classification)
 ```
 
 ```{r glm_confusion_matrix}
-
 confusionMatrix(logistic_classification, testing$default_0, positive = "1")
-
-
-confusionMatrix(logistic_classification,testing$Default.0,positive = "1")
-
-confusionMatrix(logistic_classification,testing$Retained.in.2012.,positive = "1")
-
 ```
 
 ####ROC Curve
 ```{r glm_ROC}
-
-
 logistic_ROC_prediction <- prediction(logistic_probabilities, testing$default_0)
-
-
-
-logistic_ROC_prediction <- prediction(logistic_probabilities, testing$Default.0)
-
-logistic_ROC_prediction <- prediction(logistic_probabilities, testing$Retained.in.2012.)
 logistic_ROC <- performance(logistic_ROC_prediction,"tpr","fpr") #Create ROC curve data
 plot(logistic_ROC) #Plot ROC curve
 ```
 
 ####AUC (area under curve)
+Create AUC data
+Calculate AUC
+Display AUC value: 90+% - excellent, 80-90% - very good, 70-80% - good, 60-70% - so so, below 60% - not much value
 ```{r glm_AUC}
-auc.tmp <- performance(logistic_ROC_prediction,"auc") #Create AUC data
-logistic_auc_testing <- as.numeric(auc.tmp@y.values) #Calculate AUC
-logistic_auc_testing #Display AUC value: 90+% - excellent, 80-90% - very good, 70-80% - good, 60-70% - so so, below 60% - not much value
+auc.tmp <- performance(logistic_ROC_prediction,"auc")
+logistic_auc_testing <- as.numeric(auc.tmp@y.values)
+logistic_auc_testing
 ```
 
 #### Lift chart
 ```{r glm_plotLift}
-plotLift(logistic_probabilities, testing$default_0, cumulative = TRUE, n.buckets = 10) # Plot Lift chart
-plotLift(logistic_probabilities, testing$Default.0, cumulative = TRUE, n.buckets = 10) # Plot Lift chart
+plotLift(logistic_probabilities, testing$default_0, cumulative = TRUE, n.buckets = 10)
 ```
 
 #CTREE
-```{r ctree}
-ctree_tree<-ctree(default_0~.,data=training) #Run ctree on training data
-plot(ctree_tree, gp = gpar(fontsize = 8)) #Plotting the tree (adjust fontsize if needed)
+Plotting the tree (adjust fontsize if needed)
+Predict probabilities
+#Predict classification using 0.6073 threshold. Why 0.6073 - that's the average probability of being retained in the data. 
 
-ctree_probabilities<-predict(ctree_tree,newdata=testing,type="prob") #Predict probabilities
+```{r ctree}
+ctree_tree<-ctree(default_0~.,data=training) 
+plot(ctree_tree, gp = gpar(fontsize = 8)) 
+ctree_probabilities<-predict(ctree_tree,newdata=testing,type="prob")
 ctree_classification<-rep("1",500)
-ctree_classification[ctree_probabilities[,2]<0.6073]="0" #Predict classification using 0.6073 threshold. Why 0.6073 - that's the average probability of being retained in the data. An alternative code: logistic_classification <- as.integer(logistic_probabilities > mean(testing$Default.0 == "1"))
+ctree_classification[ctree_probabilities[,2]<0.6073]="0" #An alternative code: logistic_classification <- as.integer(logistic_probabilities > mean(testing$Default.0 == "1"))
 ctree_classification<-as.factor(ctree_classification)
 ```
 
 ```{r ctree_confusion_matrix}
-confusionMatrix(ctree_classification,testing$default_0,positive = "1")
+confusionMatrix(ctree_classification, testing$default_0,positive = "1")
 ```
 
 # RPART
-# The rpart method has an important "complexity parameter", cp, which determines how big the tree is.  
-
+The rpart method has an important "complexity parameter", cp, which determines how big the tree is.  
+Run ctree on training data
+Understand the relationship between the error and cp
+As a rule of thumb pick up the largest cp which does not give a substantial drop in error
+Prun the tree. Play with cp to see how the resultant tree changes
+Plotting the tree (adjust fontsize if needed)
 ```{r rpart}
 
 CART_cp = rpart.control(cp = 0.0005)
-
-rpart_tree<-rpart(default_0~.,data=training, method="class", control=CART_cp) #Run ctree on training data
-
-printcp(rpart_tree) # Understand the relationship between the error and cp
-plotcp(rpart_tree) # As a rule of thumb pick up the largest cp which does not give a substantial drop in error
-
-prunned_rpart_tree<-prune(rpart_tree, cp=0.007) #Prun the tree. Play with cp to see how the resultant tree changes
-plot(as.party(prunned_rpart_tree), type = "extended",gp = gpar(fontsize = 7)) #Plotting the tree (adjust fontsize if needed)
+rpart_tree<-rpart(default_0~.,data=training, method="class", control=CART_cp)
+printcp(rpart_tree) 
+plotcp(rpart_tree)
+prunned_rpart_tree<-prune(rpart_tree, cp=0.007)
+plot(as.party(prunned_rpart_tree), type = "extended",gp = gpar(fontsize = 7))
 
 rpart_prediction_class<-predict(prunned_rpart_tree,newdata=testing, type="class") #Predict classification (for confusion matrix)
 confusionMatrix(rpart_prediction_class,testing$default_0,positive = "1") #Display confusion matrix
@@ -232,11 +222,10 @@ plotLift(rpart_prediction_class,  testing$default_0, cumulative = TRUE, n.bucket
 ```
 
 #Random Forest
+cutoffs need to be determined for class 0 and class 1. By default 50/50, but need not be those necessarily
 
 ```{r random_forest}
-model_forest <- randomForest(default_0~ ., data=training, 
-                             importance=TRUE,proximity=TRUE,
-                             type="classification") #cutoffs need to be determined for class 0 and class 1. By default 50/50, but need not be those necessarily
+model_forest <- randomForest(default_0~ ., data=training, importance=TRUE,proximity=TRUE, type="classification")
 print(model_forest)   
 plot(model_forest)
 importance(model_forest)
@@ -302,14 +291,3 @@ XGboost_auc_testing #Display AUC value: 90+% - excellent, 80-90% - very good, 70
 
 plotLift(XGboost_prediction, testing$default_0, cumulative = TRUE, n.buckets = 10) # Plot Lift chart
 ```
-
-plotLift(XGboost_prediction, testing$Default.0, cumulative = TRUE, n.buckets = 10) # Plot Lift chart
-```
-
-plotLift(logistic_probabilities, testing$Retained.in.2012., cumulative = TRUE, n.buckets = 10) # Plot Lift chart
-```
-
-
->>>>>>> ae9c4a2cb56bc947bfe4e3c3772980e2fb2240f6
-
->>>>>>> bc292a39cf0c23f8c943299bc2bc36de6ef43102
