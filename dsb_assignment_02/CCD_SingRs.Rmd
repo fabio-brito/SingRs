@@ -6,8 +6,9 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 if("pacman" %in% rownames(installed.packages()) == FALSE) {install.packages("pacman")} 
-pacman::p_load("xlsx","caret","ROCR","lift","glmnet","MASS","e1071", "randomForest", "xgboost", "party", "partykit","ROCR","lift","rpart","e1071", "readxl") 
+pacman::p_load("xlsx","caret","ROCR","lift","glmnet","MASS","e1071", "randomForest", "xgboost", "party", "partykit","ROCR","lift","rpart","e1071", "readxl", "tibble") 
 library("readxl")
+library("tibble")
 ```
 
 #Setting the data
@@ -116,7 +117,7 @@ testing <- CCDdata_A[ -inTrain,]
 
 #First model - glm
 ```{r glm}
-model_logistic_glm <- glm(default_0~ ., data=training, family="binomial"(link="logit"))
+model_logistic_glm <- glm(default_0~., data=training, family="binomial"(link="logit"))
 summary(model_logistic_glm)
 
 model_logistic_stepwiseAIC<-stepAIC(model_logistic_glm,direction = c("both"),trace = 1) #AIC stepwise
