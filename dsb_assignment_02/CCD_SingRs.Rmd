@@ -3,7 +3,7 @@ title: "Credit_cards_defaults"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 if("pacman" %in% rownames(installed.packages()) == FALSE) {install.packages("pacman")} 
 pacman::p_load("xlsx","caret","ROCR","lift","glmnet","MASS","e1071", "randomForest", "xgboost", "party", "partykit","ROCR","lift","rpart","e1071", "readxl", "tibble", "plotly", "scales") 
@@ -15,27 +15,53 @@ library("scales")
 \pagebreak
 #Setting the data
 ##Loading the data
+CCDdata_A is training dataset with 24000 observations.
+CCDdata_B is dataset, where we need to predict which customer would default on the credit and which not.
 ```{r data_loading}
 CCDdata_A <- read_excel("DSB A2 -- credit data.xlsx", sheet =1, col_names = TRUE, na = '')
-str(CCDdata_A) # See if some data types were misclassified when importing data from CSV
+CCDdata_B <- read_excel("DSB A2 - new applications.xlsx", sheet =1, col_names = TRUE, na = '')
+str(CCDdata_A)
+str(CCDdata_B)
 table(CCDdata_A$default_0)
 ```
 
 ##Fixing data from numeric to factors
+Fixing classificaiton of datasets A and B
 ```{r data_asfactors}
+
 CCDdata_A$ID<-NULL #remove the ID column
 CCDdata_A$SEX <- as.factor(CCDdata_A$SEX)
 CCDdata_A$EDUCATION <- as.factor(CCDdata_A$EDUCATION)
 CCDdata_A$MARRIAGE <- as.factor(CCDdata_A$MARRIAGE)
-#CCDdata_A$PAY_1 <- as.factor(CCDdata_A$PAY_1)
-#CCDdata_A$PAY_2 <- as.factor(CCDdata_A$PAY_2)
-#CCDdata_A$PAY_3 <- as.factor(CCDdata_A$PAY_3)
-#CCDdata_A$PAY_4 <- as.factor(CCDdata_A$PAY_4)
-#CCDdata_A$PAY_5 <- as.factor(CCDdata_A$PAY_5)
-#CCDdata_A$PAY_6 <- as.factor(CCDdata_A$PAY_6)
+CCDdata_A$PAY_1 <- as.factor(CCDdata_A$PAY_1)
+CCDdata_A$PAY_2 <- as.factor(CCDdata_A$PAY_2)
+CCDdata_A$PAY_3 <- as.factor(CCDdata_A$PAY_3)
+CCDdata_A$PAY_4 <- as.factor(CCDdata_A$PAY_4)
+CCDdata_A$PAY_5 <- as.factor(CCDdata_A$PAY_5)
+CCDdata_A$PAY_6 <- as.factor(CCDdata_A$PAY_6)
 CCDdata_A$LIMIT_BAL <- as.integer(CCDdata_A$LIMIT_BAL)
 #CCDdata_A$AGE <- as.factor(CCDdata_A$AGE)
 CCDdata_A$default_0 <- as.factor(CCDdata_A$default_0)
+
+CCDdata_B$ID <- NULL
+CCDdata_B$SEX <- as.factor(CCDdata_B$SEX)
+CCDdata_B$EDUCATION <- as.factor(CCDdata_B$EDUCATION)
+CCDdata_B$MARRIAGE <- as.factor(CCDdata_B$MARRIAGE)
+CCDdata_B$PAY_1 <- as.factor(CCDdata_B$PAY_1)
+CCDdata_B$PAY_2 <- as.factor(CCDdata_B$PAY_2)
+CCDdata_B$PAY_3 <- as.factor(CCDdata_B$PAY_3)
+CCDdata_B$PAY_4 <- as.factor(CCDdata_B$PAY_4)
+CCDdata_B$PAY_5 <- as.factor(CCDdata_B$PAY_5)
+CCDdata_B$PAY_6 <- as.factor(CCDdata_B$PAY_6)
+CCDdata_B$LIMIT_BAL <- as.integer(CCDdata_B$LIMIT_BAL)
+
+levels(CCDdata_B$PAY_1) <- levels(CCDdata_A$PAY_1)
+levels(CCDdata_B$PAY_2) <- levels(CCDdata_A$PAY_2)
+levels(CCDdata_B$PAY_3) <- levels(CCDdata_A$PAY_3)
+levels(CCDdata_B$PAY_4) <- levels(CCDdata_A$PAY_4)
+levels(CCDdata_B$PAY_5) <- levels(CCDdata_A$PAY_5)
+levels(CCDdata_B$PAY_6) <- levels(CCDdata_A$PAY_6)
+
 ```
 
 ```{r data_cleaning}
@@ -101,10 +127,12 @@ combinerarecategories<-function(data_frame,mincount){
 
 ##Cleaning dataset from NAs and combining rare categories
 FixNA's
-combine categories with <10 values in CCDdata into "Other"
+combine categories with <10 values in CCDdata_A into "Other"
 ```{r applying functions, echo=FALSE}
-CCDdata_A<-fixNAs(CCDdata_A)
+#CCDdata_A<-fixNAs(CCDdata_A)
 CCDdata_A<-combinerarecategories(CCDdata_A,10)
+
+#CCDdata_B<-fixNAs(CCDdata_B)
 ```
 ##Data partition
 ```{r data_partition}
@@ -117,25 +145,42 @@ testing <- CCDdata_A[ -inTrain,]
 \pagebreak
 #First model - glm
 ```{r glm}
+start_time <- Sys.time()
 model_logistic_glm <- glm(default_0~., data=training, family="binomial"(link="logit"))
 summary(model_logistic_glm)
+end_time <- Sys.time()
+end_time - start_time
+```
 
+```{r glm_steps}
+start_time <- Sys.time()
 model_logistic_stepwiseAIC<-stepAIC(model_logistic_glm,direction = c("both"),trace = 1) #AIC stepwise
 summary(model_logistic_stepwiseAIC)
+end_time <- Sys.time()
+end_time - start_time
+```
 
+```{r glm_plots}
 par(mfrow=c(1,4))
 plot(model_logistic_stepwiseAIC)
 par(mfrow=c(1,1))
 ```
+
 ##GLM model prediction
+
+Predict classification using 0.7789167 threshold. 
+0.7789167 - that's the average probability of not defaulting in the data. 
+An alternative code: logistic_classification <- as.integer(logistic_probabilities > mean(testing$Default.0 == "1"))
+
 ```{r glm_predictions}
-logistic_probabilities<-predict(model_logistic_stepwiseAIC,newdata=testing,type="response") #Predict probabilities
+logistic_probabilities<-predict(model_logistic_stepwiseAIC,newdata=testing,type="response") 
 logistic_classification<-rep("1",500)
 
-logistic_classification[logistic_probabilities<0.6073]="0" #Predict classification using 0.6073 threshold. Why 0.6073 - that's the average probability of being retained in the data. An alternative code: logistic_classification <- as.integer(logistic_probabilities > mean(testing$Default.0 == "1"))
+logistic_classification[logistic_probabilities<0.7789167]="0"
 
 logistic_classification<-as.factor(logistic_classification)
 ```
+
 ##GLM Confusion matrix
 ```{r glm_confusion_matrix}
 glm_cm<-confusionMatrix(logistic_classification, testing$default_0, positive = "1")
@@ -145,8 +190,8 @@ glm_cm
 ##GLM ROC Curve
 ```{r glm_ROC}
 logistic_ROC_prediction <- prediction(logistic_probabilities, testing$default_0)
-logistic_ROC <- performance(logistic_ROC_prediction,"tpr","fpr") #Create ROC curve data
-plot(logistic_ROC) #Plot ROC curve
+logistic_ROC <- performance(logistic_ROC_prediction,"tpr","fpr") 
+plot(logistic_ROC)
 ```
 
 ##GLM AUC (area under curve)
@@ -168,15 +213,19 @@ plotLift(logistic_probabilities, testing$default_0, cumulative = TRUE, n.buckets
 #CTREE
 Plotting the tree (adjust fontsize if needed)
 Predict probabilities
-Predict classification using 0.6073 threshold. Why 0.6073 - that's the average probability of being retained in the data. 
+
 ```{r ctree}
 ctree_tree<-ctree(default_0~.,data=training) 
 plot(ctree_tree, gp = gpar(fontsize = 8)) 
 ctree_probabilities<-predict(ctree_tree,newdata=testing,type="prob")
 ctree_classification<-rep("1",500)
-ctree_classification[ctree_probabilities[,2]<0.6073]="0" #An alternative code: logistic_classification <- as.integer(logistic_probabilities > mean(testing$Default.0 == "1"))
+ctree_classification[ctree_probabilities[,2]<0.7789167]="0" 
+
+#An alternative code: logistic_classification <- as.integer(logistic_probabilities > mean(testing$Default.0 == "1"))
+
 ctree_classification<-as.factor(ctree_classification)
 ```
+
 ##CTREE confustion matrix
 ```{r ctree_confusion_matrix}
 ctree_cm<-confusionMatrix(ctree_classification, testing$default_0,positive = "1")
@@ -189,7 +238,7 @@ The rpart method has an important "complexity parameter", cp, which determines h
 Run ctree on training data
 Understand the relationship between the error and cp
 As a rule of thumb pick up the largest cp which does not give a substantial drop in error
-Prun the tree. Play with cp to see how the resultant tree changes
+Prun the tree. Play with cp to see how the result and tree changes
 Plotting the tree (adjust fontsize if needed)
 ```{r rpart}
 CART_cp = rpart.control(cp = 0.0005)
@@ -240,23 +289,27 @@ plotLift(rpart_prediction_class,  testing$default_0, cumulative = TRUE, n.bucket
 cutoffs need to be determined for class 0 and class 1. By default 50/50, but need not be those necessarily
 
 ```{r random_forest}
+start_time <- Sys.time()
 model_forest <- randomForest(default_0~ ., data=training, importance=TRUE,proximity=TRUE, type="classification")
-print(model_forest)   
+print(model_forest)
+end_time <- Sys.time()
+end_time - start_time
+
 plot(model_forest)
 importance(model_forest)
 varImpPlot(model_forest)
 ```
 
 ##Random forest predictions
+Finding predicitons: probabilities and classification
+Predict probabilities -- an array with 2 columns: for not defaulted (class 0) and for defaulted (class 1)
 
 ```{r rf_predictions}
-###Finding predicitons: probabilities and classification
-forest_probabilities<-predict(model_forest,newdata=testing,type="prob") #Predict probabilities -- an array with 2 columns: for not retained (class 0) and for retained (class 1)
+
+forest_probabilities<-predict(model_forest,newdata=testing,type="prob") 
 forest_classification<-rep("1",500)
-forest_classification[forest_probabilities[,2]<0.5]="0" #Predict classification using 0.5 threshold. Why 0.5 and not 0.6073? Use the same as in cutoff above
+forest_classification[forest_probabilities[,2]<0.5]="0"
 forest_classification<-as.factor(forest_classification)
-#There is also a "shortcut" forest_prediction<-predict(model_forest,newdata=testing, type="response") 
-#But it by default uses threshold of 50%: actually works better (more accuracy) on this data
 ```
 
 ## RF Confusion matrix
@@ -268,33 +321,35 @@ rf_cm
 
 ##ROC Curve
 ```{r rf_roc}
-forest_ROC_prediction <- prediction(forest_probabilities[,2], testing$default_0) #Calculate errors
-forest_ROC <- performance(forest_ROC_prediction,"tpr","fpr") #Create ROC curve data
-plot(forest_ROC) #Plot ROC curve
+forest_ROC_prediction <- prediction(forest_probabilities[,2], testing$default_0)
+forest_ROC <- performance(forest_ROC_prediction,"tpr","fpr")
+plot(forest_ROC)
 ```
 
 ##AUC (area under curve)
 ```{r rf_auc}
-AUC.tmp <- performance(forest_ROC_prediction,"auc") #Create AUC data
-forest_AUC <- as.numeric(AUC.tmp@y.values) #Calculate AUC
-forest_AUC #Display AUC value: 90+% - excellent, 80-90% - very good, 70-80% - good, 60-70% - so so, below 60% - not much value
+AUC.tmp <- performance(forest_ROC_prediction,"auc") 
+forest_AUC <- as.numeric(AUC.tmp@y.values) 
+forest_AUC 
 ```
 
 ##Lift chart
 ```{r rf_lift}
-plotLift(forest_probabilities[,2],  testing$default_0, cumulative = TRUE, n.buckets = 10) # Plot Lift chart
+plotLift(forest_probabilities[,2],  testing$default_0, cumulative = TRUE, n.buckets = 10)
 ```
 
 ###An alternative way is to plot a Lift curve not by buckets, but on all data points
-```{r rf_lift_alternative}
-Lift_forest <- performance(forest_ROC_prediction,"lift","rpp")
-plot(Lift_forest)
-```
+#```{r rf_lift_alternative}
+#Lift_forest <- performance(forest_ROC_prediction,"lift","rpp")
+#plot(Lift_forest)
+#```
 
 
 \pagebreak
 #xgboost
 ```{r xgboost}
+start_time <- Sys.time()
+
 training.x <-model.matrix(default_0~ ., data = training)
 testing.x <-model.matrix(default_0~ ., data = testing)
 
@@ -304,6 +359,8 @@ model_XGboost<-xgboost(data = data.matrix(training.x[,-1]),
                        max_depth = 20, 
                        nround=50, 
                        objective = "binary:logistic")
+end_time <- Sys.time()
+end_time - start_time
 ```
 
 ##Predict classification (for confusion matrix)
@@ -313,20 +370,20 @@ XGboost_prediction<-predict(model_XGboost,newdata=testing.x[,-1], type="response
 
 ###Display confusion matrix
 ```{r xgb_cm}
-xgb_cm<-confusionMatrix(as.factor(ifelse(XGboost_prediction>0.6073,1,0)),testing$default_0,positive="1")
+xgb_cm<-confusionMatrix(as.factor(ifelse(XGboost_prediction>0.7789167,1,0)),testing$default_0,positive="1")
 xgb_cm
 ```
 ##ROC Curve
 ```{r xgb_roc}
-XGboost_pred_testing <- prediction(XGboost_prediction, testing$default_0) #Calculate errors
-XGboost_ROC_testing <- performance(XGboost_pred_testing,"tpr","fpr") #Create ROC curve data
-plot(XGboost_ROC_testing) #Plot ROC curve
+XGboost_pred_testing <- prediction(XGboost_prediction, testing$default_0) 
+XGboost_ROC_testing <- performance(XGboost_pred_testing,"tpr","fpr")
+plot(XGboost_ROC_testing)
 ```
 ##AUC
 ```{r xgb_auc}
-auc.tmp <- performance(XGboost_pred_testing,"auc") #Create AUC data
-XGboost_auc_testing <- as.numeric(auc.tmp@y.values) #Calculate AUC
-XGboost_auc_testing #Display AUC value: 90+% - excellent, 80-90% - very good, 70-80% - good, 60-70% - so so, below 60% - not much value
+auc.tmp <- performance(XGboost_pred_testing,"auc")
+XGboost_auc_testing <- as.numeric(auc.tmp@y.values)
+XGboost_auc_testing 
 ```
 ##Lift chart
 ```{r xgb_lc}
@@ -346,7 +403,7 @@ plot_ly(x=best_cm$Model, y=best_cm$Accuracy, type="bar", text = percent(best_cm$
         layout(yaxis = list(range = c(0.789, 0.85)))
 
 plot_ly(x=best_cm$Model, y=best_cm$Sensitivity, type="bar", text = percent(best_cm$Sensitivity), textposition = 'outside')%>%
-        layout(yaxis = list(range = c(0.009, 0.35)))
+        layout(yaxis = list(range = c(0, 0.35)))
 
 plot_ly(x=best_cm$Model, y=best_cm$Specificity, type="bar", text = percent(best_cm$Specificity), textposition = 'outside')%>%
         layout(yaxis = list(range = c(0.95, 1.02)))
@@ -357,24 +414,16 @@ plot_ly(x=best_cm$Model, y=best_cm$Specificity, type="bar", text = percent(best_
 #Applying best model on new data
 Creating dataset with one column - assuming that Random Forest is our best model
 ```{r best_model_application}
-CCDdata_B <- read_excel("DSB A2 - new applications.xlsx", sheet =1, col_names = TRUE, na = '')
 
-CCDdata_B$ID <- NULL
-CCDdata_B$SEX <- as.factor(CCDdata_B$SEX)
-CCDdata_B$EDUCATION <- as.factor(CCDdata_B$EDUCATION)
-CCDdata_B$MARRIAGE <- as.factor(CCDdata_B$MARRIAGE)
-#CCDdata_B$PAY_1 <- as.factor(CCDdata_B$PAY_1)
-#CCDdata_B$PAY_2 <- as.factor(CCDdata_B$PAY_2)
-#CCDdata_B$PAY_3 <- as.factor(CCDdata_B$PAY_3)
-#CCDdata_B$PAY_4 <- as.factor(CCDdata_B$PAY_4)
-#CCDdata_B$PAY_5 <- as.factor(CCDdata_B$PAY_5)
-#CCDdata_B$PAY_6 <- as.factor(CCDdata_B$PAY_6)
-CCDdata_B$LIMIT_BAL <- as.integer(CCDdata_B$LIMIT_BAL)
 
-CCDdata_B<-fixNAs(CCDdata_B)
-CCDdata_B<-combinerarecategories(CCDdata_B,10)
 
 defaults_predictions <- predict(model_forest,newdata=CCDdata_B,type="prob")
+defaults_predictions_tpr <- prediction(defaults_predictions[,2], AAAA)
+
+
+forest_probabilities<-predict(model_forest,newdata=testing,type="prob")
+forest_ROC_prediction <- prediction(forest_probabilities[,2], testing$default_0)
+forest_ROC <- performance(forest_ROC_prediction,"tpr","fpr")
 
 ```
 
@@ -410,6 +459,8 @@ Sp = Test unit specificity
 #sum(defaults_predictions[,1]>rf_cm$byClass[3])
 #sum(PPV < rf_cm$byClass[3])
 #sum(NPV < rf_cm$byClass[4])
+
+
 
 profit <- sum(defaults_predictions[,1] >= 0.5)*1500 - sum(defaults_predictions[,1] < 0.5)*5000
 profit
