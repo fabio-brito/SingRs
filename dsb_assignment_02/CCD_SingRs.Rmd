@@ -27,13 +27,12 @@ CCDdata_A$ID<-NULL #remove the ID column
 CCDdata_A$SEX <- as.factor(CCDdata_A$SEX)
 CCDdata_A$EDUCATION <- as.factor(CCDdata_A$EDUCATION)
 CCDdata_A$MARRIAGE <- as.factor(CCDdata_A$MARRIAGE)
-CCDdata_A$PAY_1 <- as.factor(CCDdata_A$PAY_1)
-CCDdata_A$PAY_2 <- as.factor(CCDdata_A$PAY_2)
-CCDdata_A$PAY_3 <- as.factor(CCDdata_A$PAY_3)
-CCDdata_A$PAY_4 <- as.factor(CCDdata_A$PAY_4)
-CCDdata_A$PAY_5 <- as.factor(CCDdata_A$PAY_5)
-CCDdata_A$PAY_6 <- as.factor(CCDdata_A$PAY_6)
-#CCDdata_A$ID <- as.factor(CCDdata_A$ID)
+#CCDdata_A$PAY_1 <- as.factor(CCDdata_A$PAY_1)
+#CCDdata_A$PAY_2 <- as.factor(CCDdata_A$PAY_2)
+#CCDdata_A$PAY_3 <- as.factor(CCDdata_A$PAY_3)
+#CCDdata_A$PAY_4 <- as.factor(CCDdata_A$PAY_4)
+#CCDdata_A$PAY_5 <- as.factor(CCDdata_A$PAY_5)
+#CCDdata_A$PAY_6 <- as.factor(CCDdata_A$PAY_6)
 CCDdata_A$LIMIT_BAL <- as.integer(CCDdata_A$LIMIT_BAL)
 #CCDdata_A$AGE <- as.factor(CCDdata_A$AGE)
 CCDdata_A$default_0 <- as.factor(CCDdata_A$default_0)
@@ -104,7 +103,6 @@ combinerarecategories<-function(data_frame,mincount){
 FixNA's
 combine categories with <10 values in CCDdata into "Other"
 ```{r applying functions, echo=FALSE}
-CCDdata_A <- subset(CCDdata_A, select=-ID)
 CCDdata_A<-fixNAs(CCDdata_A)
 CCDdata_A<-combinerarecategories(CCDdata_A,10)
 ```
@@ -338,29 +336,70 @@ plotLift(XGboost_prediction, testing$default_0, cumulative = TRUE, n.buckets = 1
 \pagebreak
 #Choosing best model by comparing accuracy from all confusion matricies
 ```{r best_model}
-best_cm <- data.frame("Model"=c("glm","rpart","ctree","Random Forest","xgboost"), "Accuracy"=c(glm_cm$overall[1],rpart_cm$overall[1],ctree_cm$overall[1],rf_cm$overall[1],xgb_cm$overall[1]))
+best_cm <- data.frame("Model"=c("glm","rpart","ctree","Random Forest","xgboost"),
+                      "Accuracy"=c(glm_cm$overall[1],rpart_cm$overall[1],ctree_cm$overall[1],rf_cm$overall[1],xgb_cm$overall[1]),
+                      "Sensitivity"=c(glm_cm$byClass[1],rpart_cm$byClass[1],ctree_cm$byClass[1],rf_cm$byClass[1],xgb_cm$byClass[1]),
+                      "Specificity"=c(glm_cm$byClass[2],rpart_cm$byClass[2],ctree_cm$byClass[2],rf_cm$byClass[2],xgb_cm$byClass[2]))
+
 
 plot_ly(x=best_cm$Model, y=best_cm$Accuracy, type="bar", text = percent(best_cm$Accuracy), textposition = 'outside')%>%
-        layout(yaxis = list(range = c(0.7999, 0.85)))
+        layout(yaxis = list(range = c(0.789, 0.85)))
+
+plot_ly(x=best_cm$Model, y=best_cm$Sensitivity, type="bar", text = percent(best_cm$Sensitivity), textposition = 'outside')%>%
+        layout(yaxis = list(range = c(0.009, 0.35)))
+
+plot_ly(x=best_cm$Model, y=best_cm$Specificity, type="bar", text = percent(best_cm$Specificity), textposition = 'outside')%>%
+        layout(yaxis = list(range = c(0.95, 1.02)))
 
 ```
 
 \pagebreak
 #Applying best model on new data
-Creating dataset with one column
+Creating dataset with one column - assuming that Random Forest is our best model
 ```{r best_model_application}
+CCDdata_B <- read_excel("DSB A2 - new applications.xlsx", sheet =1, col_names = TRUE, na = '')
+
+CCDdata_B$ID <- NULL
+CCDdata_B$SEX <- as.factor(CCDdata_B$SEX)
+CCDdata_B$EDUCATION <- as.factor(CCDdata_B$EDUCATION)
+CCDdata_B$MARRIAGE <- as.factor(CCDdata_B$MARRIAGE)
+#CCDdata_B$PAY_1 <- as.factor(CCDdata_B$PAY_1)
+#CCDdata_B$PAY_2 <- as.factor(CCDdata_B$PAY_2)
+#CCDdata_B$PAY_3 <- as.factor(CCDdata_B$PAY_3)
+#CCDdata_B$PAY_4 <- as.factor(CCDdata_B$PAY_4)
+#CCDdata_B$PAY_5 <- as.factor(CCDdata_B$PAY_5)
+#CCDdata_B$PAY_6 <- as.factor(CCDdata_B$PAY_6)
+CCDdata_B$LIMIT_BAL <- as.integer(CCDdata_B$LIMIT_BAL)
+
+CCDdata_B<-fixNAs(CCDdata_B)
+CCDdata_B<-combinerarecategories(CCDdata_B,10)
+
+defaults_predictions <- predict(model_forest,newdata=CCDdata_B,type="prob")
 
 ```
 
 #Calculating potential profit
-In other words, for each client in the pilot, if the credit is issued and repaid, then the bank earns a profit of 25,000*2% + 1,000 = 1,500; if the credit is granted but the client defaults, then the bank loses 25,000 - 20,000 = 5,000? And if the credit is not issued, then the profit=loss=0.
+
+In other words, for each client in the pilot, if the credit is issued and repaid, then the bank earns a profit of 25,000*2% + 1,000 = 1,500;
+
+if the credit is granted but the client defaults, then the bank loses 25,000 - 20,000 = 5,000?
+
+And if the credit is not issued, then the profit=loss=0.
+
 ```{r profit}
+
+#MORE SOPHICTICATED APPROACH NEEDED - USING SENSITIVITY / SPECIFICITY DATA - WORKING AROUND FP and FN errors (non-predictable profit / losses)
+
+profit <- sum(defaults_predictions[,1] >= 0.5)*1500 - sum(defaults_predictions[,1] < 0.5)*5000
+profit
 
 ```
 
 
 #Which three of 1 000 pilot clients are most likely to repay the loan if it were granted to them?
 ```{r good_clients}
+
+
 
 ```
 
