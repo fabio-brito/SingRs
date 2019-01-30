@@ -400,6 +400,49 @@ plot_ly(x=best_cm$Model, y=best_cm$Specificity, type="bar", text = percent(best_
 ```
 
 \pagebreak
+#choosing best (GLM - CHANGE TO BEST MODEL TYPE) default sensitivity
+```{r best_GLM_model sensitivity}
+#conparing models with different logistic probabilities (to have fewer false negatives and more false posativies, as false negatives are more expensive)
+logistic_classification_0.5<-rep("0",12000)
+logistic_classification_0.5[logistic_probabilities>0.5]="1"
+logistic_classification_0.5<-as.factor(logistic_classification_0.5)
+
+logistic_classification_0.4<-rep("0",12000)
+logistic_classification_0.4[logistic_probabilities>0.4]="1"
+logistic_classification_0.4<-as.factor(logistic_classification_0.4)
+
+logistic_classification_0.3<-rep("0",12000)
+logistic_classification_0.3[logistic_probabilities>0.3]="1"
+logistic_classification_0.3<-as.factor(logistic_classification_0.3)
+
+##GLM Confusion matrix for each model
+glm_cm_0.5<-confusionMatrix(logistic_classification_0.5, testing$default_0, positive = "1")
+glm_cm_0.5
+
+glm_cm_0.4<-confusionMatrix(logistic_classification_0.4, testing$default_0, positive = "1")
+glm_cm_0.4
+
+glm_cm_0.3<-confusionMatrix(logistic_classification_0.3, testing$default_0, positive = "1")
+glm_cm_0.3
+
+#plot them all together
+best_glm_cm <- data.frame("Model"=c("glm_0.5","glm_0,4","glm_0.3"),
+                      "Accuracy"=c(glm_cm_0.5$overall[1],glm_cm_0.4$overall[1],glm_cm_0.3$overall[1]),
+                      "Sensitivity"=c(glm_cm_0.5$byClass[1],glm_cm_0.4$byClass[1],glm_cm_0.3$byClass[1]),
+                      "Specificity"=c(glm_cm_0.5$byClass[2],glm_cm_0.4$byClass[2],glm_cm_0.3$byClass[2]))
+
+
+plot_ly(x=best_glm_cm$Model, y=best_glm_cm$Accuracy, type="bar", text = percent(best_glm_cm$Accuracy), textposition = 'outside')%>%
+  layout(yaxis = list(range = c(0.789, 0.85)))
+
+plot_ly(x=best_glm_cm$Model, y=best_glm_cm$Sensitivity, type="bar", text = percent(best_glm_cm$Sensitivity), textposition = 'outside')%>%
+  layout(yaxis = list(range = c(0, 0.6)))
+
+plot_ly(x=best_glm_cm$Model, y=best_glm_cm$Specificity, type="bar", text = percent(best_glm_cm$Specificity), textposition = 'outside')%>%
+  layout(yaxis = list(range = c(0.95, 1.02)))
+
+```
+
 #Applying best model on new data
 Creating dataset with one column - assuming that Random Forest is our best model
 ```{r best_model_application}
