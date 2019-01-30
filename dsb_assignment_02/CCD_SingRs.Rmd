@@ -29,8 +29,6 @@ table(CCDdata_A$default_0)
 Fixing classificaiton of datasets A and B
 ```{r data_asfactors}
 
-
-
 CCDdata_A$ID<-NULL
 CCDdata_A$SEX <- as.factor(CCDdata_A$SEX)
 CCDdata_A$EDUCATION <- as.factor(CCDdata_A$EDUCATION)
@@ -62,10 +60,6 @@ levels(CCDdata_B$PAY_3) <- levels(CCDdata_A$PAY_3)
 levels(CCDdata_B$PAY_4) <- levels(CCDdata_A$PAY_4)
 levels(CCDdata_B$PAY_5) <- levels(CCDdata_A$PAY_5)
 levels(CCDdata_B$PAY_6) <- levels(CCDdata_A$PAY_6)
-
-
-
-
 ```
 
 ```{r data_cleaning}
@@ -133,9 +127,11 @@ combinerarecategories<-function(data_frame,mincount){
 FixNA's
 combine categories with <10 values in CCDdata_A into "Other"
 ```{r applying functions, echo=FALSE}
-CCDdata_A<-fixNAs(CCDdata_A)
-CCDdata_A<-combinerarecategories(CCDdata_A,10)
 
+#CCDdata_A[, 3:6][CCDdata_A[, 3:6] == 0] <- NA
+#CCDdata_B[, 3:6][CCDdata_B[, 3:6] == 0] <- NA
+#CCDdata_A<-fixNAs(CCDdata_A)
+#CCDdata_A<-combinerarecategories(CCDdata_A,10)
 #CCDdata_B<-fixNAs(CCDdata_B)
 ```
 ##Data partition
