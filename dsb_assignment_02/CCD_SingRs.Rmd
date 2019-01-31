@@ -32,21 +32,115 @@ CCDdata_A$EDUCATION[CCDdata_A$EDUCATION == 6] <- 5
 CCDdata_B$EDUCATION[CCDdata_B$EDUCATION == 0] <- 5
 CCDdata_B$EDUCATION[CCDdata_B$EDUCATION == 6] <- 5
 
-#Should we do this fix?
-#CCDdata_A$PAY_NONEED_1 = 0
-#CCDdata_A$PAY_FULL_1 = 0
-#CCDdata_A$PAY_ROLLINg_1 = 0
-#CCDdata_A$PAY_NONEED_1[CCDdata_A$PAY_1 == -2] <- 1
-#CCDdata_A$PAY_FULL_1[CCDdata_A$PAY_1 == -1] <- 1
-#CCDdata_A$PAY_ROLLINg_1[CCDdata_A$PAY_1 == 0] <- 1
-#CCDdata_A$PAY_1[CCDdata_A$PAY_1 == -2] <- 0
-#CCDdata_A$PAY_1[CCDdata_A$PAY_1 == -1] <- 0
 
-#CCDdata_A$PAY_NONEED_2 = 0
-#CCDdata_A$PAY_NONEED_3 = 0
-#CCDdata_A$PAY_NONEED_4 = 0
-#CCDdata_A$PAY_NONEED_5 = 0
-#CCDdata_A$PAY_NONEED_6 = 0
+CCDdata_A$PAY_NONEED_1 = 0
+CCDdata_A$PAY_FULL_1 = 0
+CCDdata_A$PAY_ROLLING_1 = 0
+CCDdata_A$PAY_NONEED_1[CCDdata_A$PAY_1 == -2] <- 1
+CCDdata_A$PAY_FULL_1[CCDdata_A$PAY_1 == -1] <- 1
+CCDdata_A$PAY_ROLLING_1[CCDdata_A$PAY_1 == 0] <- 1
+CCDdata_A$PAY_1[CCDdata_A$PAY_1 == -2] <- 0
+CCDdata_A$PAY_1[CCDdata_A$PAY_1 == -1] <- 0
+
+CCDdata_A$PAY_NONEED_2 = 0
+CCDdata_A$PAY_FULL_2 = 0
+CCDdata_A$PAY_ROLLING_2 = 0
+CCDdata_A$PAY_NONEED_2[CCDdata_A$PAY_2 == -2] <- 1
+CCDdata_A$PAY_FULL_2[CCDdata_A$PAY_2 == -1] <- 1
+CCDdata_A$PAY_ROLLING_2[CCDdata_A$PAY_2 == 0] <- 1
+CCDdata_A$PAY_2[CCDdata_A$PAY_2 == -2] <- 0
+CCDdata_A$PAY_2[CCDdata_A$PAY_2 == -1] <- 0
+
+CCDdata_A$PAY_NONEED_3 = 0
+CCDdata_A$PAY_FULL_3 = 0
+CCDdata_A$PAY_ROLLING_3 = 0
+CCDdata_A$PAY_NONEED_3[CCDdata_A$PAY_3 == -2] <- 1
+CCDdata_A$PAY_FULL_3[CCDdata_A$PAY_3 == -1] <- 1
+CCDdata_A$PAY_ROLLING_3[CCDdata_A$PAY_3 == 0] <- 1
+CCDdata_A$PAY_3[CCDdata_A$PAY_3 == -2] <- 0
+CCDdata_A$PAY_3[CCDdata_A$PAY_3 == -1] <- 0
+
+CCDdata_A$PAY_NONEED_4 = 0
+CCDdata_A$PAY_FULL_4 = 0
+CCDdata_A$PAY_ROLLING_4 = 0
+CCDdata_A$PAY_NONEED_4[CCDdata_A$PAY_4 == -2] <- 1
+CCDdata_A$PAY_FULL_4[CCDdata_A$PAY_4 == -1] <- 1
+CCDdata_A$PAY_ROLLING_4[CCDdata_A$PAY_4 == 0] <- 1
+CCDdata_A$PAY_4[CCDdata_A$PAY_4 == -2] <- 0
+CCDdata_A$PAY_4[CCDdata_A$PAY_4 == -1] <- 0
+
+CCDdata_A$PAY_NONEED_5 = 0
+CCDdata_A$PAY_FULL_5 = 0
+CCDdata_A$PAY_ROLLING_5 = 0
+CCDdata_A$PAY_NONEED_1[CCDdata_A$PAY_5 == -2] <- 1
+CCDdata_A$PAY_FULL_5[CCDdata_A$PAY_5 == -1] <- 1
+CCDdata_A$PAY_ROLLING_5[CCDdata_A$PAY_5 == 0] <- 1
+CCDdata_A$PAY_5[CCDdata_A$PAY_5 == -2] <- 0
+CCDdata_A$PAY_5[CCDdata_A$PAY_5 == -1] <- 0
+
+CCDdata_A$PAY_NONEED_6 = 0
+CCDdata_A$PAY_FULL_6 = 0
+CCDdata_A$PAY_ROLLING_6 = 0
+CCDdata_A$PAY_NONEED_6[CCDdata_A$PAY_6 == -2] <- 1
+CCDdata_A$PAY_FULL_6[CCDdata_A$PAY_6 == -1] <- 1
+CCDdata_A$PAY_ROLLING_6[CCDdata_A$PAY_6 == 0] <- 1
+CCDdata_A$PAY_6[CCDdata_A$PAY_6 == -2] <- 0
+CCDdata_A$PAY_6[CCDdata_A$PAY_6 == -1] <- 0
+
+
+CCDdata_B$PAY_NONEED_1 = 0
+CCDdata_B$PAY_FULL_1 = 0
+CCDdata_B$PAY_ROLLING_1 = 0
+CCDdata_B$PAY_NONEED_1[CCDdata_B$PAY_1 == -2] <- 1
+CCDdata_B$PAY_FULL_1[CCDdata_B$PAY_1 == -1] <- 1
+CCDdata_B$PAY_ROLLING_1[CCDdata_B$PAY_1 == 0] <- 1
+CCDdata_B$PAY_1[CCDdata_B$PAY_1 == -2] <- 0
+CCDdata_B$PAY_1[CCDdata_B$PAY_1 == -1] <- 0
+
+CCDdata_B$PAY_NONEED_2 = 0
+CCDdata_B$PAY_FULL_2 = 0
+CCDdata_B$PAY_ROLLING_2 = 0
+CCDdata_B$PAY_NONEED_2[CCDdata_B$PAY_2 == -2] <- 1
+CCDdata_B$PAY_FULL_2[CCDdata_B$PAY_2 == -1] <- 1
+CCDdata_B$PAY_ROLLING_2[CCDdata_B$PAY_2 == 0] <- 1
+CCDdata_B$PAY_2[CCDdata_B$PAY_2 == -2] <- 0
+CCDdata_B$PAY_2[CCDdata_B$PAY_2 == -1] <- 0
+
+CCDdata_B$PAY_NONEED_3 = 0
+CCDdata_B$PAY_FULL_3 = 0
+CCDdata_B$PAY_ROLLING_3 = 0
+CCDdata_B$PAY_NONEED_3[CCDdata_B$PAY_3 == -2] <- 1
+CCDdata_B$PAY_FULL_3[CCDdata_B$PAY_3 == -1] <- 1
+CCDdata_B$PAY_ROLLING_3[CCDdata_B$PAY_3 == 0] <- 1
+CCDdata_B$PAY_3[CCDdata_B$PAY_3 == -2] <- 0
+CCDdata_B$PAY_3[CCDdata_B$PAY_3 == -1] <- 0
+
+CCDdata_B$PAY_NONEED_4 = 0
+CCDdata_B$PAY_FULL_4 = 0
+CCDdata_B$PAY_ROLLING_4 = 0
+CCDdata_B$PAY_NONEED_4[CCDdata_B$PAY_4 == -2] <- 1
+CCDdata_B$PAY_FULL_4[CCDdata_B$PAY_4 == -1] <- 1
+CCDdata_B$PAY_ROLLING_4[CCDdata_B$PAY_4 == 0] <- 1
+CCDdata_B$PAY_4[CCDdata_B$PAY_4 == -2] <- 0
+CCDdata_B$PAY_4[CCDdata_B$PAY_4 == -1] <- 0
+
+CCDdata_B$PAY_NONEED_5 = 0
+CCDdata_B$PAY_FULL_5 = 0
+CCDdata_B$PAY_ROLLING_5 = 0
+CCDdata_B$PAY_NONEED_1[CCDdata_B$PAY_5 == -2] <- 1
+CCDdata_B$PAY_FULL_5[CCDdata_B$PAY_5 == -1] <- 1
+CCDdata_B$PAY_ROLLING_5[CCDdata_B$PAY_5 == 0] <- 1
+CCDdata_B$PAY_5[CCDdata_B$PAY_5 == -2] <- 0
+CCDdata_B$PAY_5[CCDdata_B$PAY_5 == -1] <- 0
+
+CCDdata_B$PAY_NONEED_6 = 0
+CCDdata_B$PAY_FULL_6 = 0
+CCDdata_B$PAY_ROLLING_6 = 0
+CCDdata_B$PAY_NONEED_6[CCDdata_B$PAY_6 == -2] <- 1
+CCDdata_B$PAY_FULL_6[CCDdata_B$PAY_6 == -1] <- 1
+CCDdata_B$PAY_ROLLING_6[CCDdata_B$PAY_6 == 0] <- 1
+CCDdata_B$PAY_6[CCDdata_B$PAY_6 == -2] <- 0
+CCDdata_B$PAY_6[CCDdata_B$PAY_6 == -1] <- 0
 
 ```
 
@@ -60,6 +154,27 @@ CCDdata_A$EDUCATION <- as.factor(CCDdata_A$EDUCATION)
 CCDdata_A$MARRIAGE <- as.factor(CCDdata_A$MARRIAGE)
 
 #Should we consider as factors?
+#CCDdata_B$PAY_NONEED_1 <- as.factor(CCDdata_B$PAY_NONEED_1)
+#CCDdata_B$PAY_NONEED_2 <- as.factor(CCDdata_B$PAY_NONEED_2)
+#CCDdata_B$PAY_NONEED_3 <- as.factor(CCDdata_B$PAY_NONEED_3)
+#CCDdata_B$PAY_NONEED_4 <- as.factor(CCDdata_B$PAY_NONEED_4)
+#CCDdata_B$PAY_NONEED_5 <- as.factor(CCDdata_B$PAY_NONEED_5)
+#CCDdata_B$PAY_NONEED_6 <- as.factor(CCDdata_B$PAY_NONEED_6)
+
+#CCDdata_B$PAY_FULL_1 <- as.factor(CCDdata_B$PAY_FULL_1)
+#CCDdata_B$PAY_FULL_2 <- as.factor(CCDdata_B$PAY_FULL_2)
+#CCDdata_B$PAY_FULL_3 <- as.factor(CCDdata_B$PAY_FULL_3)
+#CCDdata_B$PAY_FULL_4 <- as.factor(CCDdata_B$PAY_FULL_4)
+#CCDdata_B$PAY_FULL_5 <- as.factor(CCDdata_B$PAY_FULL_5)
+#CCDdata_B$PAY_FULL_6 <- as.factor(CCDdata_B$PAY_FULL_6)
+
+#CCDdata_B$PAY_ROLLING_1 <- as.factor(CCDdata_B$PAY_ROLLING_1)
+#CCDdata_B$PAY_ROLLING_2 <- as.factor(CCDdata_B$PAY_ROLLING_2)
+#CCDdata_B$PAY_ROLLING_3 <- as.factor(CCDdata_B$PAY_ROLLING_3)
+#CCDdata_B$PAY_ROLLING_4 <- as.factor(CCDdata_B$PAY_ROLLING_4)
+#CCDdata_B$PAY_ROLLING_5 <- as.factor(CCDdata_B$PAY_ROLLING_5)
+#CCDdata_B$PAY_ROLLING_6 <- as.factor(CCDdata_B$PAY_ROLLING_6)
+
 #CCDdata_A$PAY_1 <- as.factor(CCDdata_A$PAY_1)
 #CCDdata_A$PAY_2 <- as.factor(CCDdata_A$PAY_2)
 #CCDdata_A$PAY_3 <- as.factor(CCDdata_A$PAY_3)
@@ -76,6 +191,27 @@ CCDdata_B$EDUCATION <- as.factor(CCDdata_B$EDUCATION)
 CCDdata_B$MARRIAGE <- as.factor(CCDdata_B$MARRIAGE)
 
 #Should we consider as factors?
+#CCDdata_A$PAY_NONEED_1 <- as.factor(CCDdata_A$PAY_NONEED_1)
+#CCDdata_A$PAY_NONEED_2 <- as.factor(CCDdata_A$PAY_NONEED_2)
+#CCDdata_A$PAY_NONEED_3 <- as.factor(CCDdata_A$PAY_NONEED_3)
+#CCDdata_A$PAY_NONEED_4 <- as.factor(CCDdata_A$PAY_NONEED_4)
+#CCDdata_A$PAY_NONEED_5 <- as.factor(CCDdata_A$PAY_NONEED_5)
+#CCDdata_A$PAY_NONEED_6 <- as.factor(CCDdata_A$PAY_NONEED_6)
+
+#CCDdata_A$PAY_FULL_1 <- as.factor(CCDdata_A$PAY_FULL_1)
+#CCDdata_A$PAY_FULL_2 <- as.factor(CCDdata_A$PAY_FULL_2)
+#CCDdata_A$PAY_FULL_3 <- as.factor(CCDdata_A$PAY_FULL_3)
+#CCDdata_A$PAY_FULL_4 <- as.factor(CCDdata_A$PAY_FULL_4)
+#CCDdata_A$PAY_FULL_5 <- as.factor(CCDdata_A$PAY_FULL_5)
+#CCDdata_A$PAY_FULL_6 <- as.factor(CCDdata_A$PAY_FULL_6)
+
+#CCDdata_A$PAY_ROLLING_1 <- as.factor(CCDdata_A$PAY_ROLLING_1)
+#CCDdata_A$PAY_ROLLING_2 <- as.factor(CCDdata_A$PAY_ROLLING_2)
+#CCDdata_A$PAY_ROLLING_3 <- as.factor(CCDdata_A$PAY_ROLLING_3)
+#CCDdata_A$PAY_ROLLING_4 <- as.factor(CCDdata_A$PAY_ROLLING_4)
+#CCDdata_A$PAY_ROLLING_5 <- as.factor(CCDdata_A$PAY_ROLLING_5)
+#CCDdata_A$PAY_ROLLING_6 <- as.factor(CCDdata_A$PAY_ROLLING_6)
+
 #CCDdata_B$PAY_1 <- as.factor(CCDdata_B$PAY_1)
 #CCDdata_B$PAY_2 <- as.factor(CCDdata_B$PAY_2)
 #CCDdata_B$PAY_3 <- as.factor(CCDdata_B$PAY_3)
