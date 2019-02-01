@@ -72,7 +72,7 @@ CCDdata_A$PAY_4[CCDdata_A$PAY_4 == -1] <- 0
 CCDdata_A$PAY_NONEED_5 = 0
 CCDdata_A$PAY_FULL_5 = 0
 CCDdata_A$PAY_ROLLING_5 = 0
-CCDdata_A$PAY_NONEED_1[CCDdata_A$PAY_5 == -2] <- 1
+CCDdata_A$PAY_NONEED_5[CCDdata_A$PAY_5 == -2] <- 1
 CCDdata_A$PAY_FULL_5[CCDdata_A$PAY_5 == -1] <- 1
 CCDdata_A$PAY_ROLLING_5[CCDdata_A$PAY_5 == 0] <- 1
 CCDdata_A$PAY_5[CCDdata_A$PAY_5 == -2] <- 0
@@ -127,7 +127,7 @@ CCDdata_B$PAY_4[CCDdata_B$PAY_4 == -1] <- 0
 CCDdata_B$PAY_NONEED_5 = 0
 CCDdata_B$PAY_FULL_5 = 0
 CCDdata_B$PAY_ROLLING_5 = 0
-CCDdata_B$PAY_NONEED_1[CCDdata_B$PAY_5 == -2] <- 1
+CCDdata_B$PAY_NONEED_5[CCDdata_B$PAY_5 == -2] <- 1
 CCDdata_B$PAY_FULL_5[CCDdata_B$PAY_5 == -1] <- 1
 CCDdata_B$PAY_ROLLING_5[CCDdata_B$PAY_5 == 0] <- 1
 CCDdata_B$PAY_5[CCDdata_B$PAY_5 == -2] <- 0
@@ -142,83 +142,116 @@ CCDdata_B$PAY_ROLLING_6[CCDdata_B$PAY_6 == 0] <- 1
 CCDdata_B$PAY_6[CCDdata_B$PAY_6 == -2] <- 0
 CCDdata_B$PAY_6[CCDdata_B$PAY_6 == -1] <- 0
 
+str(CCDdata_A)
+str(CCDdata_B)
+
 ```
 
 ##Fixing data from numeric to factors
 Fixing classificaiton of datasets A and B
 ```{r data_asfactors}
 
+#DATASET_A
 CCDdata_A$ID<-NULL
 CCDdata_A$SEX <- as.factor(CCDdata_A$SEX)
 CCDdata_A$EDUCATION <- as.factor(CCDdata_A$EDUCATION)
+#CCDdata_A$AGE <- as.integer(CCDdata_A$AGE)
 CCDdata_A$MARRIAGE <- as.factor(CCDdata_A$MARRIAGE)
-
-#Should we consider as factors?
-#CCDdata_B$PAY_NONEED_1 <- as.factor(CCDdata_B$PAY_NONEED_1)
-#CCDdata_B$PAY_NONEED_2 <- as.factor(CCDdata_B$PAY_NONEED_2)
-#CCDdata_B$PAY_NONEED_3 <- as.factor(CCDdata_B$PAY_NONEED_3)
-#CCDdata_B$PAY_NONEED_4 <- as.factor(CCDdata_B$PAY_NONEED_4)
-#CCDdata_B$PAY_NONEED_5 <- as.factor(CCDdata_B$PAY_NONEED_5)
-#CCDdata_B$PAY_NONEED_6 <- as.factor(CCDdata_B$PAY_NONEED_6)
-
-#CCDdata_B$PAY_FULL_1 <- as.factor(CCDdata_B$PAY_FULL_1)
-#CCDdata_B$PAY_FULL_2 <- as.factor(CCDdata_B$PAY_FULL_2)
-#CCDdata_B$PAY_FULL_3 <- as.factor(CCDdata_B$PAY_FULL_3)
-#CCDdata_B$PAY_FULL_4 <- as.factor(CCDdata_B$PAY_FULL_4)
-#CCDdata_B$PAY_FULL_5 <- as.factor(CCDdata_B$PAY_FULL_5)
-#CCDdata_B$PAY_FULL_6 <- as.factor(CCDdata_B$PAY_FULL_6)
-
-#CCDdata_B$PAY_ROLLING_1 <- as.factor(CCDdata_B$PAY_ROLLING_1)
-#CCDdata_B$PAY_ROLLING_2 <- as.factor(CCDdata_B$PAY_ROLLING_2)
-#CCDdata_B$PAY_ROLLING_3 <- as.factor(CCDdata_B$PAY_ROLLING_3)
-#CCDdata_B$PAY_ROLLING_4 <- as.factor(CCDdata_B$PAY_ROLLING_4)
-#CCDdata_B$PAY_ROLLING_5 <- as.factor(CCDdata_B$PAY_ROLLING_5)
-#CCDdata_B$PAY_ROLLING_6 <- as.factor(CCDdata_B$PAY_ROLLING_6)
-
-#CCDdata_A$PAY_1 <- as.factor(CCDdata_A$PAY_1)
-#CCDdata_A$PAY_2 <- as.factor(CCDdata_A$PAY_2)
-#CCDdata_A$PAY_3 <- as.factor(CCDdata_A$PAY_3)
-#CCDdata_A$PAY_4 <- as.factor(CCDdata_A$PAY_4)
-#CCDdata_A$PAY_5 <- as.factor(CCDdata_A$PAY_5)
-#CCDdata_A$PAY_6 <- as.factor(CCDdata_A$PAY_6)
-
 CCDdata_A$LIMIT_BAL <- as.integer(CCDdata_A$LIMIT_BAL)
 CCDdata_A$default_0 <- as.factor(CCDdata_A$default_0)
 
+# CCDdata_A$BILL_AMT1 <- as.integer(CCDdata_A$BILL_AMT1)
+# CCDdata_A$BILL_AMT2 <- as.integer(CCDdata_A$BILL_AMT2)
+# CCDdata_A$BILL_AMT3 <- as.integer(CCDdata_A$BILL_AMT3)
+# CCDdata_A$BILL_AMT4 <- as.integer(CCDdata_A$BILL_AMT4)
+# CCDdata_A$BILL_AMT5 <- as.integer(CCDdata_A$BILL_AMT5)
+# CCDdata_A$BILL_AMT6 <- as.integer(CCDdata_A$BILL_AMT6)
+# 
+# CCDdata_A$PAY_AMT1 <- as.integer(CCDdata_A$PAY_AMT1)
+# CCDdata_A$PAY_AMT2 <- as.integer(CCDdata_A$PAY_AMT2)
+# CCDdata_A$PAY_AMT3 <- as.integer(CCDdata_A$PAY_AMT3)
+# CCDdata_A$PAY_AMT4 <- as.integer(CCDdata_A$PAY_AMT4)
+# CCDdata_A$PAY_AMT5 <- as.integer(CCDdata_A$PAY_AMT5)
+# CCDdata_A$PAY_AMT6 <- as.integer(CCDdata_A$PAY_AMT6)
+
+CCDdata_A$PAY_NONEED_1 <- as.integer(CCDdata_A$PAY_NONEED_1)
+CCDdata_A$PAY_NONEED_2 <- as.integer(CCDdata_A$PAY_NONEED_2)
+CCDdata_A$PAY_NONEED_3 <- as.integer(CCDdata_A$PAY_NONEED_3)
+CCDdata_A$PAY_NONEED_4 <- as.integer(CCDdata_A$PAY_NONEED_4)
+CCDdata_A$PAY_NONEED_5 <- as.integer(CCDdata_A$PAY_NONEED_5)
+CCDdata_A$PAY_NONEED_6 <- as.integer(CCDdata_A$PAY_NONEED_6)
+
+CCDdata_A$PAY_FULL_1 <- as.integer(CCDdata_A$PAY_FULL_1)
+CCDdata_A$PAY_FULL_2 <- as.integer(CCDdata_A$PAY_FULL_2)
+CCDdata_A$PAY_FULL_3 <- as.integer(CCDdata_A$PAY_FULL_3)
+CCDdata_A$PAY_FULL_4 <- as.integer(CCDdata_A$PAY_FULL_4)
+CCDdata_A$PAY_FULL_5 <- as.integer(CCDdata_A$PAY_FULL_5)
+CCDdata_A$PAY_FULL_6 <- as.integer(CCDdata_A$PAY_FULL_6)
+
+CCDdata_A$PAY_ROLLING_1 <- as.integer(CCDdata_A$PAY_ROLLING_1)
+CCDdata_A$PAY_ROLLING_2 <- as.integer(CCDdata_A$PAY_ROLLING_2)
+CCDdata_A$PAY_ROLLING_3 <- as.integer(CCDdata_A$PAY_ROLLING_3)
+CCDdata_A$PAY_ROLLING_4 <- as.integer(CCDdata_A$PAY_ROLLING_4)
+CCDdata_A$PAY_ROLLING_5 <- as.integer(CCDdata_A$PAY_ROLLING_5)
+CCDdata_A$PAY_ROLLING_6 <- as.integer(CCDdata_A$PAY_ROLLING_6)
+# 
+CCDdata_A$PAY_1 <- as.integer(CCDdata_A$PAY_1)
+CCDdata_A$PAY_2 <- as.integer(CCDdata_A$PAY_2)
+CCDdata_A$PAY_3 <- as.integer(CCDdata_A$PAY_3)
+CCDdata_A$PAY_4 <- as.integer(CCDdata_A$PAY_4)
+CCDdata_A$PAY_5 <- as.integer(CCDdata_A$PAY_5)
+CCDdata_A$PAY_6 <- as.integer(CCDdata_A$PAY_6)
+
+#DATASET_B
 CCDdata_B$ID <- NULL
 CCDdata_B$SEX <- as.factor(CCDdata_B$SEX)
 CCDdata_B$EDUCATION <- as.factor(CCDdata_B$EDUCATION)
+#CCDdata_B$AGE <- as.integer(CCDdata_B$AGE)
 CCDdata_B$MARRIAGE <- as.factor(CCDdata_B$MARRIAGE)
-
-#Should we consider as factors?
-#CCDdata_A$PAY_NONEED_1 <- as.factor(CCDdata_A$PAY_NONEED_1)
-#CCDdata_A$PAY_NONEED_2 <- as.factor(CCDdata_A$PAY_NONEED_2)
-#CCDdata_A$PAY_NONEED_3 <- as.factor(CCDdata_A$PAY_NONEED_3)
-#CCDdata_A$PAY_NONEED_4 <- as.factor(CCDdata_A$PAY_NONEED_4)
-#CCDdata_A$PAY_NONEED_5 <- as.factor(CCDdata_A$PAY_NONEED_5)
-#CCDdata_A$PAY_NONEED_6 <- as.factor(CCDdata_A$PAY_NONEED_6)
-
-#CCDdata_A$PAY_FULL_1 <- as.factor(CCDdata_A$PAY_FULL_1)
-#CCDdata_A$PAY_FULL_2 <- as.factor(CCDdata_A$PAY_FULL_2)
-#CCDdata_A$PAY_FULL_3 <- as.factor(CCDdata_A$PAY_FULL_3)
-#CCDdata_A$PAY_FULL_4 <- as.factor(CCDdata_A$PAY_FULL_4)
-#CCDdata_A$PAY_FULL_5 <- as.factor(CCDdata_A$PAY_FULL_5)
-#CCDdata_A$PAY_FULL_6 <- as.factor(CCDdata_A$PAY_FULL_6)
-
-#CCDdata_A$PAY_ROLLING_1 <- as.factor(CCDdata_A$PAY_ROLLING_1)
-#CCDdata_A$PAY_ROLLING_2 <- as.factor(CCDdata_A$PAY_ROLLING_2)
-#CCDdata_A$PAY_ROLLING_3 <- as.factor(CCDdata_A$PAY_ROLLING_3)
-#CCDdata_A$PAY_ROLLING_4 <- as.factor(CCDdata_A$PAY_ROLLING_4)
-#CCDdata_A$PAY_ROLLING_5 <- as.factor(CCDdata_A$PAY_ROLLING_5)
-#CCDdata_A$PAY_ROLLING_6 <- as.factor(CCDdata_A$PAY_ROLLING_6)
-
-#CCDdata_B$PAY_1 <- as.factor(CCDdata_B$PAY_1)
-#CCDdata_B$PAY_2 <- as.factor(CCDdata_B$PAY_2)
-#CCDdata_B$PAY_3 <- as.factor(CCDdata_B$PAY_3)
-#CCDdata_B$PAY_4 <- as.factor(CCDdata_B$PAY_4)
-#CCDdata_B$PAY_5 <- as.factor(CCDdata_B$PAY_5)
-#CCDdata_B$PAY_6 <- as.factor(CCDdata_B$PAY_6)
 CCDdata_B$LIMIT_BAL <- as.integer(CCDdata_B$LIMIT_BAL)
+
+# CCDdata_B$BILL_AMT1 <- as.integer(CCDdata_B$BILL_AMT1)
+# CCDdata_B$BILL_AMT2 <- as.integer(CCDdata_B$BILL_AMT2)
+# CCDdata_B$BILL_AMT3 <- as.integer(CCDdata_B$BILL_AMT3)
+# CCDdata_B$BILL_AMT4 <- as.integer(CCDdata_B$BILL_AMT4)
+# CCDdata_B$BILL_AMT5 <- as.integer(CCDdata_B$BILL_AMT5)
+# CCDdata_B$BILL_AMT6 <- as.integer(CCDdata_B$BILL_AMT6)
+# 
+# CCDdata_B$PAY_AMT1 <- as.integer(CCDdata_B$PAY_AMT1)
+# CCDdata_B$PAY_AMT2 <- as.integer(CCDdata_B$PAY_AMT2)
+# CCDdata_B$PAY_AMT3 <- as.integer(CCDdata_B$PAY_AMT3)
+# CCDdata_B$PAY_AMT4 <- as.integer(CCDdata_B$PAY_AMT4)
+# CCDdata_B$PAY_AMT5 <- as.integer(CCDdata_B$PAY_AMT5)
+# CCDdata_B$PAY_AMT6 <- as.integer(CCDdata_B$PAY_AMT6)
+
+CCDdata_B$PAY_NONEED_1 <- as.integer(CCDdata_B$PAY_NONEED_1)
+CCDdata_B$PAY_NONEED_2 <- as.integer(CCDdata_B$PAY_NONEED_2)
+CCDdata_B$PAY_NONEED_3 <- as.integer(CCDdata_B$PAY_NONEED_3)
+CCDdata_B$PAY_NONEED_4 <- as.integer(CCDdata_B$PAY_NONEED_4)
+CCDdata_B$PAY_NONEED_5 <- as.integer(CCDdata_B$PAY_NONEED_5)
+CCDdata_B$PAY_NONEED_6 <- as.integer(CCDdata_B$PAY_NONEED_6)
+
+CCDdata_B$PAY_FULL_1 <- as.integer(CCDdata_B$PAY_FULL_1)
+CCDdata_B$PAY_FULL_2 <- as.integer(CCDdata_B$PAY_FULL_2)
+CCDdata_B$PAY_FULL_3 <- as.integer(CCDdata_B$PAY_FULL_3)
+CCDdata_B$PAY_FULL_4 <- as.integer(CCDdata_B$PAY_FULL_4)
+CCDdata_B$PAY_FULL_5 <- as.integer(CCDdata_B$PAY_FULL_5)
+CCDdata_B$PAY_FULL_6 <- as.integer(CCDdata_B$PAY_FULL_6)
+
+CCDdata_B$PAY_ROLLING_1 <- as.integer(CCDdata_B$PAY_ROLLING_1)
+CCDdata_B$PAY_ROLLING_2 <- as.integer(CCDdata_B$PAY_ROLLING_2)
+CCDdata_B$PAY_ROLLING_3 <- as.integer(CCDdata_B$PAY_ROLLING_3)
+CCDdata_B$PAY_ROLLING_4 <- as.integer(CCDdata_B$PAY_ROLLING_4)
+CCDdata_B$PAY_ROLLING_5 <- as.integer(CCDdata_B$PAY_ROLLING_5)
+CCDdata_B$PAY_ROLLING_6 <- as.integer(CCDdata_B$PAY_ROLLING_6)
+ 
+CCDdata_B$PAY_1 <- as.integer(CCDdata_B$PAY_1)
+CCDdata_B$PAY_2 <- as.integer(CCDdata_B$PAY_2)
+CCDdata_B$PAY_3 <- as.integer(CCDdata_B$PAY_3)
+CCDdata_B$PAY_4 <- as.integer(CCDdata_B$PAY_4)
+CCDdata_B$PAY_5 <- as.integer(CCDdata_B$PAY_5)
+CCDdata_B$PAY_6 <- as.integer(CCDdata_B$PAY_6)
+
 
 levels(CCDdata_B$PAY_1) <- levels(CCDdata_A$PAY_1)
 levels(CCDdata_B$PAY_2) <- levels(CCDdata_A$PAY_2)
@@ -226,6 +259,10 @@ levels(CCDdata_B$PAY_3) <- levels(CCDdata_A$PAY_3)
 levels(CCDdata_B$PAY_4) <- levels(CCDdata_A$PAY_4)
 levels(CCDdata_B$PAY_5) <- levels(CCDdata_A$PAY_5)
 levels(CCDdata_B$PAY_6) <- levels(CCDdata_A$PAY_6)
+
+str(CCDdata_A)
+str(CCDdata_B)
+
 ```
 
 ```{r data_cleaning}
@@ -302,8 +339,10 @@ combine categories with <10 values in CCDdata_A into "Other"
 ```
 ##Data partition
 ```{r data_partition}
-set.seed(77850) 
-inTrain <- createDataPartition(y = CCDdata_A$default_0, p=0.5, list = FALSE)
+# set.seed(77850) 
+set.seed(616) 
+#set.seed(1937) 
+inTrain <- createDataPartition(y = CCDdata_A$default_0, p=(1-(1001/24000)), list = FALSE)
 training <- CCDdata_A[ inTrain,]
 testing <- CCDdata_A[ -inTrain,]
 ```
@@ -341,7 +380,7 @@ An alternative code: logistic_classification <- as.integer(logistic_probabilitie
 ```{r glm_predictions}
 logistic_probabilities<-predict(model_logistic_stepwiseAIC,newdata=testing,type="response") 
 logistic_classification<-rep("0",length(testing$default_0))
-logistic_classification[logistic_probabilities>0.5]="1"
+logistic_classification[logistic_probabilities>1-0.7789167]="1"
 logistic_classification<-as.factor(logistic_classification)
 ```
 
@@ -383,7 +422,7 @@ ctree_tree<-ctree(default_0~.,data=training)
 plot(ctree_tree, gp = gpar(fontsize = 8)) 
 ctree_probabilities<-predict(ctree_tree,newdata=testing,type="prob")
 ctree_classification<-rep("0",length(testing$default_0))
-ctree_classification[ctree_probabilities[,2]>0.5]="1" 
+ctree_classification[ctree_probabilities[,2]>1-0.7789167]="1" 
 ctree_classification<-as.factor(ctree_classification)
 ```
 
@@ -406,7 +445,7 @@ CART_cp = rpart.control(cp = 0.0005)
 rpart_tree<-rpart(default_0~.,data=training, method="class", control=CART_cp)
 printcp(rpart_tree) 
 plotcp(rpart_tree)
-prunned_rpart_tree<-prune(rpart_tree, cp=0.002)
+prunned_rpart_tree<-prune(rpart_tree, cp=0.001)
 plot(as.party(prunned_rpart_tree), type = "extended",gp = gpar(fontsize = 7))
 ```
 
