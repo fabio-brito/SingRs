@@ -160,20 +160,6 @@ CCDdata_A$MARRIAGE <- as.factor(CCDdata_A$MARRIAGE)
 CCDdata_A$LIMIT_BAL <- as.integer(CCDdata_A$LIMIT_BAL)
 CCDdata_A$default_0 <- as.factor(CCDdata_A$default_0)
 
-# CCDdata_A$BILL_AMT1 <- as.integer(CCDdata_A$BILL_AMT1)
-# CCDdata_A$BILL_AMT2 <- as.integer(CCDdata_A$BILL_AMT2)
-# CCDdata_A$BILL_AMT3 <- as.integer(CCDdata_A$BILL_AMT3)
-# CCDdata_A$BILL_AMT4 <- as.integer(CCDdata_A$BILL_AMT4)
-# CCDdata_A$BILL_AMT5 <- as.integer(CCDdata_A$BILL_AMT5)
-# CCDdata_A$BILL_AMT6 <- as.integer(CCDdata_A$BILL_AMT6)
-# 
-# CCDdata_A$PAY_AMT1 <- as.integer(CCDdata_A$PAY_AMT1)
-# CCDdata_A$PAY_AMT2 <- as.integer(CCDdata_A$PAY_AMT2)
-# CCDdata_A$PAY_AMT3 <- as.integer(CCDdata_A$PAY_AMT3)
-# CCDdata_A$PAY_AMT4 <- as.integer(CCDdata_A$PAY_AMT4)
-# CCDdata_A$PAY_AMT5 <- as.integer(CCDdata_A$PAY_AMT5)
-# CCDdata_A$PAY_AMT6 <- as.integer(CCDdata_A$PAY_AMT6)
-
 CCDdata_A$PAY_NONEED_1 <- as.integer(CCDdata_A$PAY_NONEED_1)
 CCDdata_A$PAY_NONEED_2 <- as.integer(CCDdata_A$PAY_NONEED_2)
 CCDdata_A$PAY_NONEED_3 <- as.integer(CCDdata_A$PAY_NONEED_3)
@@ -209,20 +195,6 @@ CCDdata_B$EDUCATION <- as.factor(CCDdata_B$EDUCATION)
 #CCDdata_B$AGE <- as.integer(CCDdata_B$AGE)
 CCDdata_B$MARRIAGE <- as.factor(CCDdata_B$MARRIAGE)
 CCDdata_B$LIMIT_BAL <- as.integer(CCDdata_B$LIMIT_BAL)
-
-# CCDdata_B$BILL_AMT1 <- as.integer(CCDdata_B$BILL_AMT1)
-# CCDdata_B$BILL_AMT2 <- as.integer(CCDdata_B$BILL_AMT2)
-# CCDdata_B$BILL_AMT3 <- as.integer(CCDdata_B$BILL_AMT3)
-# CCDdata_B$BILL_AMT4 <- as.integer(CCDdata_B$BILL_AMT4)
-# CCDdata_B$BILL_AMT5 <- as.integer(CCDdata_B$BILL_AMT5)
-# CCDdata_B$BILL_AMT6 <- as.integer(CCDdata_B$BILL_AMT6)
-# 
-# CCDdata_B$PAY_AMT1 <- as.integer(CCDdata_B$PAY_AMT1)
-# CCDdata_B$PAY_AMT2 <- as.integer(CCDdata_B$PAY_AMT2)
-# CCDdata_B$PAY_AMT3 <- as.integer(CCDdata_B$PAY_AMT3)
-# CCDdata_B$PAY_AMT4 <- as.integer(CCDdata_B$PAY_AMT4)
-# CCDdata_B$PAY_AMT5 <- as.integer(CCDdata_B$PAY_AMT5)
-# CCDdata_B$PAY_AMT6 <- as.integer(CCDdata_B$PAY_AMT6)
 
 CCDdata_B$PAY_NONEED_1 <- as.integer(CCDdata_B$PAY_NONEED_1)
 CCDdata_B$PAY_NONEED_2 <- as.integer(CCDdata_B$PAY_NONEED_2)
@@ -260,83 +232,8 @@ levels(CCDdata_B$PAY_4) <- levels(CCDdata_A$PAY_4)
 levels(CCDdata_B$PAY_5) <- levels(CCDdata_A$PAY_5)
 levels(CCDdata_B$PAY_6) <- levels(CCDdata_A$PAY_6)
 
-str(CCDdata_A)
-str(CCDdata_B)
-
 ```
 
-```{r data_cleaning}
-
-fixNAs<-function(data_frame){
-  # Define reactions to NAs
-  integer_reac<-0
-  factor_reac<-"FIXED_NA"
-  character_reac<-"FIXED_NA"
-  date_reac<-as.Date("1900-01-01")
-  # Loop through columns in the data frame and depending on which class the variable is, apply the defined reaction and create a surrogate
-  
-  for (i in 1 : ncol(data_frame)){
-    if (class(data_frame[,i]) %in% c("numeric","integer")) {
-      if (any(is.na(data_frame[,i]))){
-        data_frame[,paste0(colnames(data_frame)[i],"_surrogate")]<-
-          as.factor(ifelse(is.na(data_frame[,i]),"1","0"))
-        data_frame[is.na(data_frame[,i]),i]<-integer_reac
-      }
-    } else
-      if (class(data_frame[,i]) %in% c("factor")) {
-        if (any(is.na(data_frame[,i]))){
-          data_frame[,i]<-as.character(data_frame[,i])
-          data_frame[,paste0(colnames(data_frame)[i],"_surrogate")]<-
-            as.factor(ifelse(is.na(data_frame[,i]),"1","0"))
-          data_frame[is.na(data_frame[,i]),i]<-factor_reac
-          data_frame[,i]<-as.factor(data_frame[,i])
-          
-        } 
-      } else {
-        if (class(data_frame[,i]) %in% c("character")) {
-          if (any(is.na(data_frame[,i]))){
-            data_frame[,paste0(colnames(data_frame)[i],"_surrogate")]<-
-              as.factor(ifelse(is.na(data_frame[,i]),"1","0"))
-            data_frame[is.na(data_frame[,i]),i]<-character_reac
-          }  
-        } else {
-          if (class(data_frame[,i]) %in% c("Date")) {
-            if (any(is.na(data_frame[,i]))){
-              data_frame[,paste0(colnames(data_frame)[i],"_surrogate")]<-
-                as.factor(ifelse(is.na(data_frame[,i]),"1","0"))
-              data_frame[is.na(data_frame[,i]),i]<-date_reac
-            }
-          }  
-        }       
-      }
-  } 
-  return(data_frame) 
-}
-
-# Create another a custom function to combine rare categories into "Other."+the name of the original variavle (e.g., Other.State)
-# This function has two arguments: the name of the dataframe and the count of observation in a category to define "rare"
-
-combinerarecategories<-function(data_frame,mincount){ 
-  for (i in 1 : ncol(data_frame)){
-    a<-data_frame[,i]
-    replace <- names(which(table(a) < mincount))
-    levels(a)[levels(a) %in% replace] <-paste("Other",colnames(data_frame)[i],sep=".")
-    data_frame[,i]<-a }
-  return(data_frame) }
-
-```
-
-##Cleaning dataset from NAs and combining rare categories
-FixNA's
-combine categories with <10 values in CCDdata_A into "Other"
-```{r applying functions, echo=FALSE}
-
-#CCDdata_A[, 3:6][CCDdata_A[, 3:6] == 0] <- NA
-#CCDdata_B[, 3:6][CCDdata_B[, 3:6] == 0] <- NA
-#CCDdata_A<-fixNAs(CCDdata_A)
-#CCDdata_A<-combinerarecategories(CCDdata_A,10)
-#CCDdata_B<-fixNAs(CCDdata_B)
-```
 ##Data partition
 ```{r data_partition}
 # set.seed(77850) 
@@ -432,6 +329,25 @@ ctree_cm<-confusionMatrix(ctree_classification, testing$default_0,positive = "1"
 ctree_cm
 ```
 
+##Predict probabilities and calculate errors
+```{r rpart_prediction_prob}
+ctree_probabilities_testing <-predict(ctree_tree,newdata=testing,type = "prob")
+ctree_pred_testing <- prediction(ctree_probabilities_testing[,2], testing$default_0)
+```
+
+##ROC
+```{r rpart_roc}
+ctree_ROC_testing <- performance(ctree_pred_testing,"tpr","fpr")
+plot(ctree_ROC_testing)
+```
+
+##AUC
+```{r rpart_auc}
+ctree_auc.tmp <- performance(ctree_pred_testing,"auc") 
+ctree_auc_testing <- as.numeric(ctree_auc.tmp@y.values)
+ctree_auc_testing
+```
+
 \pagebreak
 # RPART
 The rpart method has an important "complexity parameter", cp, which determines how big the tree is.  
@@ -490,6 +406,7 @@ cutoffs need to be determined for class 0 and class 1. By default 50/50, but nee
 
 ```{r random_forest}
 start_time <- Sys.time()
+memory.limit(10* 10^10)
 model_forest <- randomForest(default_0~ ., data=training, importance=TRUE,proximity=TRUE, type="classification")
 print(model_forest)
 end_time <- Sys.time()
@@ -505,7 +422,6 @@ Finding predicitons: probabilities and classification
 Predict probabilities -- an array with 2 columns: for not defaulted (class 0) and for defaulted (class 1)
 
 ```{r rf_predictions}
-
 forest_probabilities<-predict(model_forest,newdata=testing,type="prob") 
 forest_classification<-rep("0",length(testing$default_0))
 forest_classification[forest_probabilities[,2]>0.5]="1"
