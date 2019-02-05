@@ -236,8 +236,8 @@ levels(CCDdata_B$PAY_6) <- levels(CCDdata_A$PAY_6)
 
 ##Data partition
 ```{r data_partition}
-# set.seed(77850) 
-set.seed(616) 
+set.seed(77850) 
+# set.seed(616) 
 #set.seed(1937) 
 inTrain <- createDataPartition(y = CCDdata_A$default_0, p=(1-(1001/24000)), list = FALSE)
 training <- CCDdata_A[ inTrain,]
@@ -520,63 +520,13 @@ plot_ly(x=best_cm$Model, y=best_cm$Specificity, type="bar", text = percent(best_
 
 ```
 
-\pagebreak
-#choosing best (GLM - CHANGE TO BEST MODEL TYPE) default sensitivity
-```{r best_GLM_model sensitivity}
-#conparing models with different logistic probabilities (to have fewer false negatives and more false posativies, as false negatives are more expensive)
-logistic_classification_0.5<-rep("0",length(testing$default_0))
-logistic_classification_0.5[logistic_probabilities>0.5]="1"
-logistic_classification_0.5<-as.factor(logistic_classification_0.5)
-
-logistic_classification_0.4<-rep("0",length(testing$default_0))
-logistic_classification_0.4[logistic_probabilities>0.4]="1"
-logistic_classification_0.4<-as.factor(logistic_classification_0.4)
-
-logistic_classification_0.3<-rep("0",length(testing$default_0))
-logistic_classification_0.3[logistic_probabilities>0.3]="1"
-logistic_classification_0.3<-as.factor(logistic_classification_0.3)
-
-##GLM Confusion matrix for each model
-glm_cm_0.5<-confusionMatrix(logistic_classification_0.5, testing$default_0, positive = "1")
-glm_cm_0.5
-
-glm_cm_0.4<-confusionMatrix(logistic_classification_0.4, testing$default_0, positive = "1")
-glm_cm_0.4
-
-glm_cm_0.3<-confusionMatrix(logistic_classification_0.3, testing$default_0, positive = "1")
-glm_cm_0.3
-
-#plot them all together
-best_glm_cm <- data.frame("Model"=c("glm_0.5","glm_0,4","glm_0.3"),
-                      "Accuracy"=c(glm_cm_0.5$overall[1],glm_cm_0.4$overall[1],glm_cm_0.3$overall[1]),
-                      "Sensitivity"=c(glm_cm_0.5$byClass[1],glm_cm_0.4$byClass[1],glm_cm_0.3$byClass[1]),
-                      "Specificity"=c(glm_cm_0.5$byClass[2],glm_cm_0.4$byClass[2],glm_cm_0.3$byClass[2]))
-
-
-plot_ly(x=best_glm_cm$Model, y=best_glm_cm$Accuracy, type="bar", text = percent(best_glm_cm$Accuracy), textposition = 'outside')%>%
-  layout(yaxis = list(range = c(0.789, 0.85)))
-
-plot_ly(x=best_glm_cm$Model, y=best_glm_cm$Sensitivity, type="bar", text = percent(best_glm_cm$Sensitivity), textposition = 'outside')%>%
-  layout(yaxis = list(range = c(0, 0.6)))
-
-plot_ly(x=best_glm_cm$Model, y=best_glm_cm$Specificity, type="bar", text = percent(best_glm_cm$Specificity), textposition = 'outside')%>%
-  layout(yaxis = list(range = c(0.90, 1.02)))
-
-```
 
 #Applying best model on new data
 Creating dataset with one column - assuming that Random Forest is our best model
 ```{r best_model_application}
 
-
-
-defaults_predictions <- predict(model_forest,newdata=CCDdata_B,type="prob")
-#defaults_predictions_tpr <- prediction(defaults_predictions[,2], AAAA)
-
-
-#forest_probabilities<-predict(model_forest,newdata=testing,type="prob")
-#forest_ROC_prediction <- prediction(forest_probabilities[,2], testing$default_0)
-#forest_ROC <- performance(forest_ROC_prediction,"tpr","fpr")
+stepaic_new_predictions <-predict(model_logistic_stepwiseAIC,newdata=CCDdata_B,type="response") 
+ctree_new_predictions <- predict(ctree_tree,newdata=CCDdata_B,type="prob")
 
 ```
 
@@ -603,33 +553,7 @@ Sp = Test unit specificity
 
 ```{r profit}
 
-#MORE SOPHICTICATED APPROACH NEEDED - USING SENSITIVITY / SPECIFICITY DATA - WORKING AROUND FP and FN errors (non-predictable profit / losses)
-
-#PPV <- defaults_predictions[,1]*rf_cm$byClass[1]/(defaults_predictions[,1]*rf_cm$byClass[1]+(1-defaults_predictions[,1])*(1-rf_cm$byClass[2]))
-#NPV <- (1-defaults_predictions[,1])*rf_cm$byClass[2]/((1-defaults_predictions[,1])*rf_cm$byClass[2]+defaults_predictions[,1]*(1-rf_cm$byClass[2]))
-#CCDdata_B <- cbind(CCDdata_B, defaults_predictions, PPV, NPV)
-
-#sum(defaults_predictions[,1]>rf_cm$byClass[3])
-#sum(PPV < rf_cm$byClass[3])
-#sum(NPV < rf_cm$byClass[4])
-
-
-
-profit <- sum(defaults_predictions[,1] >= 0.5)*1500 - sum(defaults_predictions[,1] < 0.5)*5000
+profit <- sum(defaults_predictions[,2] <= 0.7789167)*1500 - sum(defaults_predictions[,2] > 0.7789167)*5000
 profit
-
-```
-
-
-#Which three of 1 000 pilot clients are most likely to repay the loan if it were granted to them?
-```{r good_clients}
-
-
-
-```
-
-
-#Which three of 1 000 pilot clients are least likely to repay the loan if it were granted to them?  
-```{r bad_clients}
 
 ```
