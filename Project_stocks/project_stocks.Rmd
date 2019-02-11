@@ -1,0 +1,28 @@
+---
+title: "Project_SingRs"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Prediction of stock movements on stock exchange 
+
+We will do the analysis of past share prices of the S&P500 companies, trading volumes, bid low, ask high, price volatiilty to predict the movement of the stock next day. 
+
+Data would be used from WRDS CRSP
+
+```{r data_loading}
+data_general <- read.csv("./Project_stocks/oracle_data.csv")
+data_working <- data_general
+str(data_working)
+```
+
+
+###Data engenieering
+
+Transform dataset and take share price for the past 30days
+Vaiarbles would be volume traded, return, volatility each day. Shareprice would be independent variable
+rows - would be timeseries
+
