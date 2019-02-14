@@ -1,0 +1,231 @@
+---
+title: "Project_SingRs"
+output: html_document
+---
+
+##Acknowledgement: Frederico Belo, Ahmed Guecioueur
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Load required packages
+```{r, echo=FALSE}
+if("pacman" %in% rownames(installed.packages()) == FALSE) {install.packages("pacman")} # Check if you have universal installer package, install if not
+
+pacman::p_load("caret","ROCR","lift","glmnet","MASS","e1071",'dplyr',
+               "partykit","rpart", "munsell","caTools", "caret", "randomForest") #Check, and if needed install the necessary packages
+```
+
+## Prediction of stock movements on stock exchange 
+
+We will do the analysis of past share prices of the S&P500 companies, trading volumes, bid low, ask high, price volatiilty to predict the movement of the stock next day. 
+
+- Data would be used from WRDS CRSP
+
+```{r data_loading}
+data_general <- read.csv("oracle_data_3.csv")
+data_working <- data_general
+str(data_working)
+```
+
+
+##Clean the data
+Bidlo
+ - check for 0s (no price available)
+ 
+```{r, check Bidlo}
+which(c(data_working$BIDLO.T.5,data_working$BIDLO.T.4, data_working$BIDLO.T.3, data_working$BIDLO.T.2, data_working$BIDLO.T.1, data_working$BIDLO.T.0) == 0, arr.ind = TRUE)
+# confirm no 0s
+```
+
+Askhi
+ - check for 0s (no price available)
+```{r, check Askhi}
+which(c(data_working$ASKHI.T.5,data_working$ASKHI.T.4, data_working$ASKHI.T.3, data_working$ASKHI.T.2, data_working$ASKHI.T.1, data_working$ASKHI.T.0) == 0, arr.ind = TRUE)
+# Confirm no 0s
+```
+
+ 
+ - check for negative values - closing ask.
+ - check for positive values - highest trade
+
+PRC
+ - check for negative values - this is a bid/ask average (can ignore the negative sign)
+
+Numtrd 
+ - check for 99 (means number unavailable)
+```{r, check Numtrd}
+which(c(data_working$NUMTRD.T.5, data_working$NUMTRD.T.4, data_working$NUMTRD.T.3, data_working$NUMTRD.T.2, data_working$NUMTRD.T.1, data_working$NUMTRD.T.0) == 99, arr.ind = TRUE)
+# Confirm no 99s
+```
+ 
+Create a custom function to fix missing values ("NAs") and preserve the NA info as surrogate variables
+
+```{r, echo=TRUE}
+fixNAs<-function(data_frame){
+  # Define reactions to NAs
+  integer_reac<-0
+  # Loop through columns in the data frame and depending on which class the variable is, apply the defined reaction and create a surrogate
+  
+  for (i in 1 : ncol(data_frame)){
+    if (class(data_frame[,i]) %in% c("numeric","integer")) {
+      if (any(is.na(data_frame[,i]))){
+        data_frame[,paste0(colnames(data_frame)[i],"_surrogate")]<-
+          as.factor(ifelse(is.na(data_frame[,i]),"1","0"))
+        data_frame[is.na(data_frame[,i]),i]<-integer_reac
+      }
+      }
+  } 
+  return(data_frame) 
+}
+```
+
+## create a custom function to search for negative values - NEEDS WORK
+
+```{r, echo=TRUE}
+fixNegatives<-function(data_frame){
+  # Define reactions to Negative values
+  integer_reac<-2
+  factor_reac<-"NEGATIVE"
+  character_reac<-"NEGATIVE"
+  date_reac<-as.Date("1900-01-01")
+  # Loop through columns in the data frame and depending on which class the variable is, apply the defined reaction and create a surrogate
+  
+  for (i in 1 : ncol(data_frame)){
+    if (class(data_frame[,i]) %in% c("numeric","integer")) {
+      if (any(is.numeric()<0(data_frame[,i]))){
+        data_frame[,paste0(colnames(data_frame)[i],"_surrogate")]<-
+          as.factor(ifelse(is.na(data_frame[,i]),"1","0"))
+        data_frame[is.na(data_frame[,i]),i]<-integer_reac
+      }
+    } else
+      if (class(data_frame[,i]) %in% c("factor")) {
+        if (any(is.numeric<0(data_frame[,i]))){
+          data_frame[,i]<-as.character(data_frame[,i])
+          data_frame[,paste0(colnames(data_frame)[i],"_surrogate")]<-
+            as.factor(ifelse(is.na(data_frame[,i]),"1","0"))
+          data_frame[is.na(data_frame[,i]),i]<-factor_reac
+          data_frame[,i]<-as.factor(data_frame[,i])
+          
+        } 
+      } else {
+        if (class(data_frame[,i]) %in% c("character")) {
+          if (any(is.numeric<0(data_frame[,i]))){
+            data_frame[,paste0(colnames(data_frame)[i],"_surrogate")]<-
+              as.factor(ifelse(is.na(data_frame[,i]),"1","0"))
+            data_frame[is.na(data_frame[,i]),i]<-character_reac
+          }  
+        } else {
+          if (class(data_frame[,i]) %in% c("Date")) {
+            if (any(is.numeric<0(data_frame[,i]))){
+              data_frame[,paste0(colnames(data_frame)[i],"_surrogate")]<-
+                as.factor(ifelse(is.na(data_frame[,i]),"1","0"))
+              data_frame[is.na(data_frame[,i]),i]<-date_reac
+            }
+          }  
+        }       
+      }
+  } 
+  return(data_frame) 
+}
+```
+
+###Split the data into testing and training
+```{r data_split_cleaning}
+#data_working$date <- NULL
+
+data_working$date <- as.Date(data_working$date, "%d-%b-%y")
+data_working$VOL.T.10 <- as.numeric(data_working$VOL.T.10)
+data_working$VOL.T.9 <- as.numeric(data_working$VOL.T.9)
+data_working$VOL.T.8 <- as.numeric(data_working$VOL.T.8)
+data_working$VOL.T.7 <- as.numeric(data_working$VOL.T.7)
+data_working$VOL.T.6 <- as.numeric(data_working$VOL.T.6)
+data_working$VOL.T.5 <- as.numeric(data_working$VOL.T.5)
+data_working$VOL.T.4 <- as.numeric(data_working$VOL.T.4)
+data_working$VOL.T.3 <- as.numeric(data_working$VOL.T.3)
+data_working$VOL.T.2 <- as.numeric(data_working$VOL.T.2)
+data_working$VOL.T.1 <- as.numeric(data_working$VOL.T.1)
+data_working$MOVEMENT.T.0 <- as.factor(data_working$MOVEMENT.T.0)
+
+#data_working_wT0 <- data_working[,1:50]
+#data_working_wT0 <- cbind(data_working_wT0, data_working$MOVEMENT.T.0)
+#names(data_working_wT0)[51] <- paste("MOVEMENT.T.0")
+
+train_general <- data_working[1:2000,]
+test_general <- data_working[2001:2759,]
+test_general_womov <- test_general
+test_general_womov$MOVEMENT.T.0 <- NULL
+```
+
+
+```{r data_split_2}
+#data_working<-fixNAs(data_working)
+#data_working<-fixNegatives(data_working)
+
+set.seed(77850) #set a random number generation seed to ensure that the split is the same everytime
+inTrain <- createDataPartition(y = train_general$MOVEMENT.T.0,
+                               p = 0.75, list = FALSE)
+training <- train_general[ inTrain,]
+testing <- train_general[ -inTrain,]
+```
+
+
+###Data engenieering
+
+Transform dataset and take share price for the past 30days
+Vaiarbles would be volume traded, return, volatility each day. Shareprice would be independent variable
+rows - would be timeseries
+
+###Random forest
+
+
+```{r random_forest}
+start_time <- Sys.time()
+model_forest <- randomForest(MOVEMENT.T.0~ ., data=training, importance=TRUE, proximity=TRUE, type="classification")
+print(model_forest)
+end_time <- Sys.time()
+end_time - start_time
+
+plot(model_forest)
+importance(model_forest)
+varImpPlot(model_forest)
+```
+
+
+Finding predicitons: probabilities and classification
+
+
+```{r rf_predictions}
+forest_probabilities<-predict(model_forest,newdata=testing,type="prob") 
+forest_classification<-rep("0",length(testing$MOVEMENT.T.0))
+forest_classification[forest_probabilities[,2]>0.5]="1"
+forest_classification<-as.factor(forest_classification)
+```
+
+## RF Confusion matrix
+Display confusion matrix. Note, confusion matrix actually displays a better accuracy with threshold of 50%
+```{r rf_cf}
+rf_cm<-confusionMatrix(forest_classification,testing$MOVEMENT.T.0, positive="1")
+rf_cm
+```
+
+##ROC Curve
+```{r rf_roc}
+forest_ROC_prediction <- prediction(forest_probabilities[,2], testing$MOVEMENT.T.0)
+forest_ROC <- performance(forest_ROC_prediction,"tpr","fpr")
+plot(forest_ROC)
+```
+
+##AUC (area under curve)
+```{r rf_auc}
+AUC.tmp <- performance(forest_ROC_prediction,"auc") 
+forest_AUC <- as.numeric(AUC.tmp@y.values) 
+forest_AUC 
+```
+
+##Lift chart
+```{r rf_lift}
+plotLift(forest_probabilities[,2],  testing$MOVEMENT.T.0, cumulative = TRUE, n.buckets = 10)
+```
+
