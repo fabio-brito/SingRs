@@ -10,3 +10,4 @@ OPENPRC.T-5,OPENPRC.T-4,OPENPRC.T-3,OPENPRC.T-2,OPENPRC.T-1,OPENPRC.T-0,,The pri
 NUMTRD.T-5,NUMTRD.T-4,NUMTRD.T-3,NUMTRD.T-2,NUMTRD.T-1,NUMTRD.T-0,,"contains the number of trades made on the Nasdaq Stock Market each date for a security. Trades on all exchanges are connected to Nasdaqs composite pricing network and all paper trades are included in the count. If the number of trades is unavailable, the field is set to 99."
 RETX.T-5,RETX.T-4,RETX.T-3,RETX.T-2,RETX.T-1,RETX.T-0,,RETX contains returns without dividends. Ordinary dividends and certain other regularly taxable dividends are excluded from the returns calculation. 
 ,,,,,MOVEMENT.T-0,,
+SPR.T-5,SPR.T-4,SPR.T-3,SPR.T-2,SPR.T-1,SPR.T-0,,Spread - the difference between ASKHI and BIDLO on the same day
