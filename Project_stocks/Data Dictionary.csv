@@ -13,3 +13,17 @@ RETX.T-5,RETX.T-4,RETX.T-3,RETX.T-2,RETX.T-1,RETX.T-0,,RETX contains returns wit
 SPR.T-5,SPR.T-4,SPR.T-3,SPR.T-2,SPR.T-1,SPR.T-0,,Spread - the difference between ASKHI and BIDLO on the same day
 VOLA_PRC,,,,,,,Volatility of closing price - measured by the std deviation in closing prices over the last 5 days
 VOLA_RETX,,,,,,,Volatility of returns - measured by the std deviation in returns over the last 5 days
+,,,,,,,
+,,,,,,,
+,,,,,,,
+Variable Name,Data Type,Variable Description,Help,,,,
+ewretd,NUM,Equal-Weighted Return (includes distributions),,,,,
+ewretx,NUM,Equal-Weighted Return (excluding dividends),,,,,
+spindx,NUM,Level on S&P Composite Index,,,,,
+sprtrn,NUM,Return on S&P Composite Index,,,,,
+totcnt,NUM,Total Market Count,,,,,
+totval,NUM,Total Market Value,,,,,
+usdcnt,NUM,Count of Securities Used,,,,,
+usdval,NUM,Market Value of Securities Used,,,,,
+vwretd,NUM,Value-Weighted Return (includes distributions),,,,,
+vwretx,NUM,Value-Weighted Return (excluding dividends),,,,,
