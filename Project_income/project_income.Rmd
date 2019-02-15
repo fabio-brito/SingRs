@@ -1,8 +1,10 @@
 ---
 title: "Introduction to linear regression"
 output:
-  pdf_document: default
+  html_document:
+    df_print: paged
   html_notebook: default
+  pdf_document: default
 ---
 
 In this notebook, we show you how to perform a linear regression in R.
@@ -11,8 +13,11 @@ In this notebook, we show you how to perform a linear regression in R.
 ```{r, echo=FALSE}
 if("pacman" %in% rownames(installed.packages()) == FALSE) {install.packages("pacman")} # Check if you have universal installer package, install if not
 
-pacman::p_load("caret","ROCR","lift","glmnet","MASS","e1071",'dplyr', "xgboost", "party",
-               "partykit","rpart", "munsell","caTools", "caret", "randomForest", "readxl") #Check, and if needed install the necessary packages
+pacman::p_load("xlsx","caret","ROCR","lift","glmnet","MASS","e1071", "randomForest", "xgboost", "party", "partykit","ROCR","lift","rpart","e1071", "readxl", "tibble", "plotly", "scales") 
+library("readxl")
+library("tibble")
+library("plotly")
+library("scales")
 ```
 
 
@@ -26,14 +31,7 @@ str(data_testing)
 ## Data adjustments
 
 ```{r}
-# combined_data$brand_agegroup <- 0
-# combined_data$brand_agegroup[combined_data$brand_age >=0   & combined_data$brand_age <50]  <- 1
-# combined_data$brand_agegroup[combined_data$brand_age >=50  & combined_data$brand_age <100] <- 2
-# combined_data$brand_agegroup[combined_data$brand_age >=100 & combined_data$brand_age <150] <- 3
-# combined_data$brand_agegroup[combined_data$brand_age >=150 & combined_data$brand_age <200] <- 4
-# combined_data$brand_agegroup[combined_data$brand_age >=200] <- 5
-# 
-# 
+
 data_training$age <- as.integer(data_training$age)
 data_training$workclass <- as.factor(data_training$workclass)
 data_training$education_num <- as.integer(data_training$education_num)
@@ -58,23 +56,8 @@ data_testing$native_country <- as.factor(data_testing$native_country)
 data_testing$education <- as.factor(data_testing$education)
 data_testing$more_50k <- as.factor(data_testing$more_50k)
 
-
-# levels(data_testing$workclass) <- levels(data_training$workclass)
-# levels(data_testing$education) <- levels(data_training$education)
-# levels(data_testing$native_country) <- levels(data_training$native_country)
-# levels(data_testing$sex) <- levels(data_training$sex)
-# levels(data_testing$relationship) <- levels(data_training$relationship)
-# levels(data_testing$occupation) <- levels(data_training$occupation)
-# levels(data_testing$marital_status) <- levels(data_training$marital_status)
-# levels(data_testing$race) <- levels(data_training$race)
-
 str(data_training)
 str(data_testing)
-```
-
-```{r}
-# linear_model <- lm(more_50k ~ ., data=data_training)
-# summary(linear_model)
 ```
 
 ## GLM
@@ -116,45 +99,6 @@ plot(logistic_ROC)
 auc.tmp <- performance(logistic_ROC_prediction,"auc")
 logistic_auc_testing <- as.numeric(auc.tmp@y.values)
 logistic_auc_testing
-```
-
-
-#CTREE
-Plotting the tree (adjust fontsize if needed)
-Predict probabilities
-
-```{r ctree}
-ctree_tree<-ctree(more_50k ~ . ,data=data_training) 
-plot(ctree_tree, gp = gpar(fontsize = 8)) 
-ctree_probabilities<-predict(ctree_tree,newdata=data_testing,type="prob")
-ctree_classification<-rep("0",length(data_testing$more_50k))
-ctree_classification[ctree_probabilities[,2]>0.3]="1" 
-ctree_classification<-as.factor(ctree_classification)
-```
-
-##CTREE confustion matrix
-```{r ctree_confusion_matrix}
-ctree_cm<-confusionMatrix(ctree_classification, testing$default_0,positive = "1")
-ctree_cm
-```
-
-##Predict probabilities and calculate errors
-```{r rpart_prediction_prob}
-ctree_probabilities_testing <-predict(ctree_tree,newdata=testing,type = "prob")
-ctree_pred_testing <- prediction(ctree_probabilities_testing[,2], testing$default_0)
-```
-
-##ROC
-```{r rpart_roc}
-ctree_ROC_testing <- performance(ctree_pred_testing,"tpr","fpr")
-plot(ctree_ROC_testing)
-```
-
-##AUC
-```{r rpart_auc}
-ctree_auc.tmp <- performance(ctree_pred_testing,"auc") 
-ctree_auc_testing <- as.numeric(ctree_auc.tmp@y.values)
-ctree_auc_testing
 ```
 
 
