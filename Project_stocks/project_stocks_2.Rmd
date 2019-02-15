@@ -82,6 +82,13 @@ data_working$MOVEMENT.T.0 <- as.factor(data_working$MOVEMENT.T.0)
 #data_working_wT0 <- cbind(data_working_wT0, data_working$MOVEMENT.T.0)
 #names(data_working_wT0)[51] <- paste("MOVEMENT.T.0")
 
+#add extra columns for the difference in volume
+data_working$VOL.T.5.4 <-data_working$VOL.T.5 - data_working$VOL.T.4
+data_working$VOL.T.4.3 <-data_working$VOL.T.4 - data_working$VOL.T.3
+data_working$VOL.T.3.2 <-data_working$VOL.T.3 - data_working$VOL.T.2
+data_working$VOL.T.2.1 <-data_working$VOL.T.2 - data_working$VOL.T.1
+
+
 train_general <- data_working[1:2000,]
 test_general <- data_working[2001:2764,]
 test_general_womov <- test_general
@@ -105,12 +112,12 @@ Transform dataset and take share price for the past 30days
 Vaiarbles would be volume traded, return, volatility each day. Shareprice would be independent variable
 rows - would be timeseries
 
-###Random forest
+###Random forest - all variables
 
 
 ```{r random_forest}
 start_time <- Sys.time()
-model_forest <- randomForest(MOVEMENT.T.0~ ., data=training, importance=TRUE, proximity=TRUE, type="classification")
+model_forest <- randomForest(MOVEMENT.T.0~ ., importance=TRUE, proximity=TRUE, type="classification")
 print(model_forest)
 end_time <- Sys.time()
 end_time - start_time
@@ -151,6 +158,51 @@ forest_AUC
 plotLift(forest_probabilities[,2],  testing$MOVEMENT.T.0, cumulative = TRUE, n.buckets = 10)
 ```
 
+###Random forest - only dynamic variables
+
+
+```{r random_forest}
+start_time <- Sys.time()
+model_forest_dynamic <- randomForest(MOVEMENT.T.0~ vwretd + vwretx + ewretd + ewretx + totval + totcnt + usdval + usdcnt + spindx + sprtrn + VOL.T.5.4 + VOL.T.4.3 + VOL.T.3.2 + VOL.T.2.1, data=training, importance=TRUE, proximity=TRUE, type="classification")
+print(model_forest)
+end_time <- Sys.time()
+end_time - start_time
+
+plot(model_forest)
+importance(model_forest)
+varImpPlot(model_forest)
+```
+
+
+Finding predicitons: probabilities and classification
+
+```{r rf_predictions}
+forest_probabilities_dynamic<-predict(model_forest_dynamic,newdata=testing,type="prob") 
+forest_classification<-rep("0",length(testing$MOVEMENT.T.0))
+forest_classification[forest_probabilities[,2]>0.2]="1"
+forest_classification<-as.factor(forest_classification)
+confusionMatrix(forest_classification,testing$MOVEMENT.T.0, positive="1")
+```
+
+
+##ROC Curve
+```{r rf_roc}
+forest_ROC_prediction_dynamic <- prediction(forest_probabilities_dynamic[,2], testing$MOVEMENT.T.0)
+forest_ROC <- performance(forest_ROC_prediction_dynamic,"tpr","fpr")
+plot(forest_ROC)
+```
+
+##AUC (area under curve)
+```{r rf_auc}
+AUC.tmp <- performance(forest_ROC_prediction_dynamic,"auc") 
+forest_AUC <- as.numeric(AUC.tmp@y.values) 
+forest_AUC 
+```
+
+##Lift chart
+```{r rf_lift}
+plotLift(forest_probabilities_dynamic[,2],  testing$MOVEMENT.T.0, cumulative = TRUE, n.buckets = 10)
+```
 ## GLM model
 
 ```{r}
@@ -202,8 +254,8 @@ plot(logistic_ROC)
 ctree_tree<-ctree(MOVEMENT.T.0~.,data=training) 
 plot(ctree_tree, gp = gpar(fontsize = 8)) 
 ctree_probabilities<-predict(ctree_tree,newdata=testing,type="prob")
-ctree_classification<-rep("0",length(testing$default_0))
-ctree_classification[ctree_probabilities[,2]>1-0.7]="1" 
+ctree_classification<-rep("0",length(testing$MOVEMENT.T.0))
+ctree_classification[ctree_probabilities[,2]>1-0.9999]="1" 
 ctree_classification<-as.factor(ctree_classification)
 ```
 
