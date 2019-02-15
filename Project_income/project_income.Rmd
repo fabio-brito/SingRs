@@ -1,0 +1,135 @@
+
+```{r package_loading, echo=FALSE}
+if("pacman" %in% rownames(installed.packages()) == FALSE) {install.packages("pacman")} # Check if you have universal installer package, install if not
+
+pacman::p_load("xlsx","caret","ROCR","lift","glmnet","MASS","e1071", "randomForest", "xgboost", "party", "partykit","ROCR","lift","rpart","e1071", "readxl", "tibble", "plotly", "scales") 
+library("readxl")
+library("tibble")
+library("plotly")
+library("scales")
+```
+
+# Loading data
+```{r data_loading}
+data_training <- read_excel("adult.data.xlsx", sheet =1, col_names = TRUE, na = '')
+data_testing <- read_excel("adult.test.xlsx", sheet =1, col_names = TRUE, na = '')
+
+str(data_training)
+str(data_testing)
+```
+## Data adjustments
+
+```{r data_adjustment}
+
+data_training$age <- as.integer(data_training$age)
+data_training$workclass <- as.factor(data_training$workclass)
+data_training$education_num <- as.factor(data_training$education_num)
+data_training$marital_status <- as.factor(data_training$marital_status)
+data_training$occupation <- as.factor(data_training$occupation)
+data_training$race <- as.factor(data_training$race)
+data_training$relationship <- as.factor(data_training$relationship)
+data_training$sex <- as.factor(data_training$sex)
+data_training$native_country <- as.factor(data_training$native_country)
+data_training$education <- as.factor(data_training$education)
+data_training$more_50k <- as.factor(data_training$more_50k)
+
+data_testing$age <- as.integer(data_testing$age)
+data_testing$workclass <- as.factor(data_testing$workclass)
+data_testing$education_num <- as.factor(data_testing$education_num)
+data_testing$marital_status <- as.factor(data_testing$marital_status)
+data_testing$occupation <- as.factor(data_testing$occupation)
+data_testing$race <- as.factor(data_testing$race)
+data_testing$relationship <- as.factor(data_testing$relationship)
+data_testing$sex <- as.factor(data_testing$sex)
+data_testing$native_country <- as.factor(data_testing$native_country)
+data_testing$education <- as.factor(data_testing$education)
+data_testing$more_50k <- as.factor(data_testing$more_50k)
+
+str(data_training)
+str(data_testing)
+```
+
+## GLM
+
+```{r glm}
+model_logistic_glm <- glm(more_50k ~ . -education_num, data=data_training, family="binomial"(link="logit"))
+summary(model_logistic_glm)
+```
+
+```{r glm_stepAIC}
+model_logistic_stepwiseAIC<-stepAIC(model_logistic_glm, direction = c("both"), trace = 1)
+summary(model_logistic_stepwiseAIC)
+```
+
+##GLM model prediction
+
+```{r glm_predictions}
+logistic_probabilities<-predict(model_logistic_stepwiseAIC,newdata=data_testing,type="response") 
+logistic_classification<-rep("0",length(data_testing$more_50k))
+logistic_classification[logistic_probabilities>0.29]="1"
+logistic_classification<-as.factor(logistic_classification)
+```
+
+##GLM Confusion matrix
+```{r glm_confusion_matrix}
+data_testing$more_50k <- as.factor(data_testing$more_50k)
+glm_cm<-confusionMatrix(logistic_classification, data_testing$more_50k, positive = "1")
+glm_cm
+
+
+```
+
+##GLM ROC Curve
+```{r glm_ROC}
+logistic_ROC_prediction <- prediction(logistic_probabilities, data_testing$more_50k)
+logistic_ROC <- performance(logistic_ROC_prediction,"tpr","fpr") 
+plot(logistic_ROC)
+```
+
+##GLM AUC (area under curve)
+```{r glm_AUC}
+auc.tmp <- performance(logistic_ROC_prediction,"auc")
+logistic_auc_testing <- as.numeric(auc.tmp@y.values)
+logistic_auc_testing
+```
+
+
+#xgboost
+```{r xgboost}
+start_time <- Sys.time()
+
+training.x <- model.matrix(more_50k ~ . -education_num , data = data_training)
+testing.x  <- model.matrix(more_50k ~ . -education_num, data = data_testing)
+
+model_XGboost<-xgboost(data = data.matrix(training.x[,-1]), 
+                       label = as.numeric(as.character(data_training$more_50k)), 
+                       eta = 0.1,
+                       max_depth = 20, 
+                       nround=50, 
+                       objective = "binary:logistic")
+end_time <- Sys.time()
+end_time - start_time
+```
+
+##Predict classification (for confusion matrix)
+```{r xgb_predictions}
+XGboost_prediction<-predict(model_XGboost,newdata=testing.x[,-1], type="response") 
+```
+
+###Display confusion matrix
+```{r xgb_cm}
+xgb_cm<-confusionMatrix(as.factor(ifelse(XGboost_prediction>0.3,1,0)),data_testing$more_50k,positive="1")
+xgb_cm
+```
+##ROC Curve
+```{r xgb_roc}
+XGboost_pred_testing <- prediction(XGboost_prediction, data_testing$more_50k) 
+XGboost_ROC_testing <- performance(XGboost_pred_testing,"tpr","fpr")
+plot(XGboost_ROC_testing)
+```
+##AUC
+```{r xgb_auc}
+auc.tmp <- performance(XGboost_pred_testing,"auc")
+XGboost_auc_testing <- as.numeric(auc.tmp@y.values)
+XGboost_auc_testing 
+```

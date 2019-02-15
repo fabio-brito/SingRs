@@ -1,0 +1,87 @@
+---
+title: "Introduction to linear regression"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+In this notebook, we show you how to perform a linear regression in R.
+
+```{r setup, include=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+if("pacman" %in% rownames(installed.packages()) == FALSE) {install.packages("pacman")} 
+pacman::p_load("xlsx","caret","ROCR","lift","glmnet","MASS","e1071", "party", "partykit","ROCR","lift","rpart","e1071", "readxl", "tibble", "plotly", "scales") 
+library("readxl")
+library("tibble")
+library("plotly")
+library("scales")
+```
+
+## Dataframe
+
+The linear regression command we are going to use requires to have all the data in one dataframe. One column will serve as the dependent variable while the other column will server as the independent variable. We use the email data set as an example. In particular, we are going to explore if there is a linear relationship between the number of email sent and received.
+
+```{r}
+nodes <- read.csv("nodes_watches.csv")
+links <- read.csv("edges_watches.csv")
+auction_data <- read.csv("auction_watches.csv")
+```
+
+We create the network and a data frame containing the useful information.
+
+
+```{r}
+library(igraph)
+net <- graph_from_data_frame(d=links, vertices=nodes, directed=F)
+watch_data <- data.frame('brand_id' = nodes$brand, 
+                    
+                    'stregth' = strength(net),
+                    'degree' = degree(net),
+                    'betweenness' = betweenness(net, normalized = TRUE),
+                    'closeness' = closeness(net),
+                    'eigen_centrality' = eigen_centrality(net)$vector,
+                    'page_rank' = page.rank(net)$vector
+                    )
+
+combined_data = merge(watch_data, auction_data, by = "brand_id")
+
+combined_data$brand_agegroup <- 0
+combined_data$brand_agegroup[combined_data$brand_age >=0   & combined_data$brand_age <50]  <- 1
+combined_data$brand_agegroup[combined_data$brand_age >=50  & combined_data$brand_age <100] <- 2
+combined_data$brand_agegroup[combined_data$brand_age >=100 & combined_data$brand_age <150] <- 3
+combined_data$brand_agegroup[combined_data$brand_age >=150 & combined_data$brand_age <200] <- 4
+combined_data$brand_agegroup[combined_data$brand_age >=200] <- 5
+
+combined_data$watch_agegroup <- 0
+combined_data$watch_agegroup[combined_data$watch_age >=0  & combined_data$watch_age <20]  <- 1
+combined_data$watch_agegroup[combined_data$watch_age >=20 & combined_data$watch_age <40]  <- 2
+combined_data$watch_agegroup[combined_data$watch_age >=40 & combined_data$watch_age <60]  <- 3
+combined_data$watch_agegroup[combined_data$watch_age >=60 & combined_data$watch_age <80]  <- 4
+combined_data$watch_agegroup[combined_data$watch_age >=80 & combined_data$watch_age <100] <- 5
+combined_data$watch_agegroup[combined_data$watch_age >=100] <- 6
+
+
+combined_data$stregth <- as.integer(combined_data$stregth)
+combined_data$degree <- as.integer(combined_data$degree)
+combined_data$brand_agegroup <- as.factor(combined_data$brand_agegroup)
+combined_data$watch_agegroup <- as.factor(combined_data$watch_agegroup)
+combined_data$brand_id <- as.factor(combined_data$brand_id)
+
+#str(combined_data)
+```
+
+
+## Linear regression
+
+Doing a linear regression is really easy in R. The command to use is lm(). The first thing to specify is y ~ x1 + x2 where y is the dependent variable and x1 and x2 are the independent variable one wants to use. The second thing to specify is the dataframe that we are going to use. Note that y, x1 and x2 are column names of this dataframe. For instance, the following looks at the relationship between the number of sent email as a function of the number of email received. The result of the linear regression is then displayed using the summary() command.
+
+```{r}
+linear_model <- lm(price_chf ~ ., data=combined_data)
+summary(linear_model)
+```
+
+```{r}
+linear_model_glm <- glm(price_chf ~ ., data=combined_data, family=Gamma(link=log))
+linear_model_stepwiseAIC<-stepAIC(linear_model_glm,direction = c("both"),trace = 1)
+summary(linear_model)
+```
