@@ -4,6 +4,8 @@ output: html_document
 ---
 
 ##Acknowledgement: Frederico Belo, Ahmed Guecioueur
+###Reproduction 
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -17,144 +19,84 @@ pacman::p_load("caret","ROCR","lift","glmnet","MASS","e1071",'dplyr',
                "partykit","rpart", "munsell","caTools", "caret", "randomForest") #Check, and if needed install the necessary packages
 ```
 
-## Prediction of stock movements on stock exchange 
+## Prediction of stock Movements on stock exchange 
 
-We will do the analysis of past share prices of the S&P500 companies, trading volumes, bid low, ask high, price volatiilty to predict the movement of the stock next day. 
+We will do the analysis of past share prices of the S&P500 companies, trading volumes, bid low, ask high, price volatiilty to predict the Movement of the stock next day. 
 
 - Data would be used from WRDS CRSP
 
 ```{r data_loading}
-data_general <- read.csv("oracle_data_3.csv")
+data_general <- read.csv("vixcurrent.csv")
 data_working <- data_general
 str(data_working)
 ```
 
 
-##Clean the data
-Bidlo
- - check for 0s (no price available)
- 
-```{r, check Bidlo}
-which(c(data_working$BIDLO.T.5,data_working$BIDLO.T.4, data_working$BIDLO.T.3, data_working$BIDLO.T.2, data_working$BIDLO.T.1, data_working$BIDLO.T.0) == 0, arr.ind = TRUE)
-# confirm no 0s
-```
-
-Askhi
- - check for 0s (no price available)
-```{r, check Askhi}
-which(c(data_working$ASKHI.T.5,data_working$ASKHI.T.4, data_working$ASKHI.T.3, data_working$ASKHI.T.2, data_working$ASKHI.T.1, data_working$ASKHI.T.0) == 0, arr.ind = TRUE)
-# Confirm no 0s
-```
-
- 
- - check for negative values - closing ask.
- - check for positive values - highest trade
-
-PRC
- - check for negative values - this is a bid/ask average (can ignore the negative sign)
-
-Numtrd 
- - check for 99 (means number unavailable)
-```{r, check Numtrd}
-which(c(data_working$NUMTRD.T.5, data_working$NUMTRD.T.4, data_working$NUMTRD.T.3, data_working$NUMTRD.T.2, data_working$NUMTRD.T.1, data_working$NUMTRD.T.0) == 99, arr.ind = TRUE)
-# Confirm no 99s
-```
- 
-##Feature engineerring
-Create log returns + lag
-Create volatility
-
 ###Split the data into testing and training
 ```{r data_split_cleaning}
-data_working$date <- NULL
-
-#data_working$date <- as.Date(data_working$date, "%d.%b.%y")
-#data_working$VOL.T.10 <- as.numeric(data_working$VOL.T.10)
-#data_working$VOL.T.9 <- as.numeric(data_working$VOL.T.9)
-#data_working$VOL.T.8 <- as.numeric(data_working$VOL.T.8)
-#data_working$VOL.T.7 <- as.numeric(data_working$VOL.T.7)
-#data_working$VOL.T.6 <- as.numeric(data_working$VOL.T.6)
-#data_working$VOL.T.5 <- as.numeric(data_working$VOL.T.5)
-#data_working$VOL.T.4 <- as.numeric(data_working$VOL.T.4)
-#data_working$VOL.T.3 <- as.numeric(data_working$VOL.T.3)
-#data_working$VOL.T.2 <- as.numeric(data_working$VOL.T.2)
-#data_working$VOL.T.1 <- as.numeric(data_working$VOL.T.1)
-data_working$MOVEMENT.T.0 <- as.factor(data_working$MOVEMENT.T.0)
-
-#data_working<-fixNAs(data_working)
-#data_working<-fixNegatives(data_working)
-
-
-#data_working_wT0 <- data_working[,1:50]
-#data_working_wT0 <- cbind(data_working_wT0, data_working$MOVEMENT.T.0)
-#names(data_working_wT0)[51] <- paste("MOVEMENT.T.0")
-
-train_general <- data_working[1:2000,]
-test_general <- data_working[2001:2764,]
-test_general_womov <- test_general
-test_general_womov$MOVEMENT.T.0 <- NULL
+data_working$Date <- as.Date(as.character(data_working$Date), "%d/%m/%y")
+data_working <- ts(data_working, start="01-02-2004", frequency = 252)
 ```
 
 
-```{r data_split_2}
+```{r time_series_analysis}
+vix_model <- ets(data_working, model = "ZZZ")
 
-set.seed(77850) #set a random number generation seed to ensure that the split is the same everytime
-inTrain <- createDataPartition(y = train_general$MOVEMENT.T.0,
-                               p = 0.75, list = FALSE)
-training <- train_general[ inTrain,]
-testing <- train_general[ -inTrain,]
+
+
+
+```
+
+```{r hmm}
+library(ldhmm)
+library(moments)
+ts = ldhmm.ts_log_rtn("spx", on ="days")
+sapply(0:10, function (drop) kurtosis(ldhmm.drop_outliers(ts$x, drop)))
+ldhmm.ts_abs_acf(ts$x,drop =0 , lag.max =6)
+ldhmm.ts_abs_acf(ts$x,drop =10, lag.max =6)
+
+
+mu_1 = 0.0006
+sigma_1 = 0.01
+mu_2 = −0.0007
+sigma_2 = 0.02
+m = 2
+
+param0=matrix(c(mu_1, sigma_1, mu_2, sigma_2), m, 2, byrow=TRUE)
+gamma0=ldhmm.gamma_init(m)
+h <- ldhmm(m, param0, gamma0, stationary=TRUE)
+hd <- ldhmm.mle(h, ts$x, decode = TRUE, print.level =2)
+hd@param
+hd@gamma
+hd@delta
+
+ldhmm.ld_stats(hd)
+
+hd@states.local.stats
+
+ldhmm.ld_stats(hd)
+
+ldhmm.calc_stats_from_obs(hd, drop=11)
+
+ldhmm.oxford_man_plot_obs(hd)
+
 ```
 
 
-###Data engenieering
 
-Transform dataset and take share price for the past 30days
-Vaiarbles would be volume traded, return, volatility each day. Shareprice would be independent variable
-rows - would be timeseries
+```{r hmm_2}
+states_prob <- t(as.data.frame(hd@states.global.stats))
 
-###Random forest
+write.csv(states_prob,"states_prob.csv")
 
 
-```{r random_forest}
-start_time <- Sys.time()
-model_forest <- randomForest(MOVEMENT.T.0~ ., data=training, importance=TRUE, proximity=TRUE, type="classification")
-print(model_forest)
-end_time <- Sys.time()
-end_time - start_time
-
-plot(model_forest)
-importance(model_forest)
-varImpPlot(model_forest)
 ```
 
+```{r hmm_3}
 
-Finding predicitons: probabilities and classification
+hs<-ldhmm.simulate_state_transition(hd, init =100000)
+kurtosis(hs@observations)
 
-```{r rf_predictions}
-forest_probabilities<-predict(model_forest,newdata=testing,type="prob") 
-forest_classification<-rep("0",length(testing$MOVEMENT.T.0))
-forest_classification[forest_probabilities[,2]>0.2]="1"
-forest_classification<-as.factor(forest_classification)
-confusionMatrix(forest_classification,testing$MOVEMENT.T.0, positive="1")
+ldhmm.simulate_abs_acf(hd, n=100000, lag.max =1)
+
 ```
-
-
-##ROC Curve
-```{r rf_roc}
-forest_ROC_prediction <- prediction(forest_probabilities[,2], testing$MOVEMENT.T.0)
-forest_ROC <- performance(forest_ROC_prediction,"tpr","fpr")
-plot(forest_ROC)
-```
-
-##AUC (area under curve)
-```{r rf_auc}
-AUC.tmp <- performance(forest_ROC_prediction,"auc") 
-forest_AUC <- as.numeric(AUC.tmp@y.values) 
-forest_AUC 
-```
-
-##Lift chart
-```{r rf_lift}
-plotLift(forest_probabilities[,2],  testing$MOVEMENT.T.0, cumulative = TRUE, n.buckets = 10)
-```
-
