@@ -117,7 +117,7 @@ rows - would be timeseries
 
 ```{r random_forest}
 start_time <- Sys.time()
-model_forest <- randomForest(MOVEMENT.T.0~ ., importance=TRUE, proximity=TRUE, type="classification")
+model_forest <- randomForest(MOVEMENT.T.0~ ., data=training, importance=TRUE, proximity=TRUE, type="classification")
 print(model_forest)
 end_time <- Sys.time()
 end_time - start_time
@@ -160,11 +160,10 @@ plotLift(forest_probabilities[,2],  testing$MOVEMENT.T.0, cumulative = TRUE, n.b
 
 ###Random forest - only dynamic variables
 
-
 ```{r random_forest}
 start_time <- Sys.time()
 model_forest_dynamic <- randomForest(MOVEMENT.T.0~ vwretd + vwretx + ewretd + ewretx + totval + totcnt + usdval + usdcnt + spindx + sprtrn + VOL.T.5.4 + VOL.T.4.3 + VOL.T.3.2 + VOL.T.2.1, data=training, importance=TRUE, proximity=TRUE, type="classification")
-print(model_forest)
+print(model_forest_dynamic)
 end_time <- Sys.time()
 end_time - start_time
 
@@ -178,18 +177,18 @@ Finding predicitons: probabilities and classification
 
 ```{r rf_predictions}
 forest_probabilities_dynamic<-predict(model_forest_dynamic,newdata=testing,type="prob") 
-forest_classification<-rep("0",length(testing$MOVEMENT.T.0))
-forest_classification[forest_probabilities[,2]>0.2]="1"
-forest_classification<-as.factor(forest_classification)
-confusionMatrix(forest_classification,testing$MOVEMENT.T.0, positive="1")
+forest_classification_dynamic<-rep("0",length(testing$MOVEMENT.T.0))
+forest_classification_dynamic[forest_probabilities_dynamic[,2]>0.2]="1"
+forest_classification_dynamic<-as.factor(forest_classification_dynamic)
+confusionMatrix(forest_classification_dynamic,testing$MOVEMENT.T.0, positive="1")
 ```
 
 
 ##ROC Curve
 ```{r rf_roc}
 forest_ROC_prediction_dynamic <- prediction(forest_probabilities_dynamic[,2], testing$MOVEMENT.T.0)
-forest_ROC <- performance(forest_ROC_prediction_dynamic,"tpr","fpr")
-plot(forest_ROC)
+forest_ROC_prediction_dynamic <- performance(forest_ROC_prediction_dynamic,"tpr","fpr")
+plot(forest_ROC_prediction_dynamic)
 ```
 
 ##AUC (area under curve)
