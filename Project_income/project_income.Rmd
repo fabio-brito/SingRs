@@ -1,16 +1,5 @@
----
-title: "Introduction to linear regression"
-output:
-  html_document:
-    df_print: paged
-  html_notebook: default
-  pdf_document: default
----
 
-In this notebook, we show you how to perform a linear regression in R.
-
-# Load required packages
-```{r, echo=FALSE}
+```{r package_loading, echo=FALSE}
 if("pacman" %in% rownames(installed.packages()) == FALSE) {install.packages("pacman")} # Check if you have universal installer package, install if not
 
 pacman::p_load("xlsx","caret","ROCR","lift","glmnet","MASS","e1071", "randomForest", "xgboost", "party", "partykit","ROCR","lift","rpart","e1071", "readxl", "tibble", "plotly", "scales") 
@@ -20,7 +9,7 @@ library("plotly")
 library("scales")
 ```
 
-
+# Loading data
 ```{r data_loading}
 data_training <- read_excel("adult.data.xlsx", sheet =1, col_names = TRUE, na = '')
 data_testing <- read_excel("adult.test.xlsx", sheet =1, col_names = TRUE, na = '')
@@ -30,11 +19,11 @@ str(data_testing)
 ```
 ## Data adjustments
 
-```{r}
+```{r data_adjustment}
 
 data_training$age <- as.integer(data_training$age)
 data_training$workclass <- as.factor(data_training$workclass)
-data_training$education_num <- as.integer(data_training$education_num)
+data_training$education_num <- as.factor(data_training$education_num)
 data_training$marital_status <- as.factor(data_training$marital_status)
 data_training$occupation <- as.factor(data_training$occupation)
 data_training$race <- as.factor(data_training$race)
@@ -46,7 +35,7 @@ data_training$more_50k <- as.factor(data_training$more_50k)
 
 data_testing$age <- as.integer(data_testing$age)
 data_testing$workclass <- as.factor(data_testing$workclass)
-data_testing$education_num <- as.integer(data_testing$education_num)
+data_testing$education_num <- as.factor(data_testing$education_num)
 data_testing$marital_status <- as.factor(data_testing$marital_status)
 data_testing$occupation <- as.factor(data_testing$occupation)
 data_testing$race <- as.factor(data_testing$race)
@@ -63,7 +52,7 @@ str(data_testing)
 ## GLM
 
 ```{r glm}
-model_logistic_glm <- glm(more_50k ~ ., data=data_training, family="binomial"(link="logit"))
+model_logistic_glm <- glm(more_50k ~ . -education_num, data=data_training, family="binomial"(link="logit"))
 summary(model_logistic_glm)
 ```
 
@@ -109,8 +98,8 @@ logistic_auc_testing
 ```{r xgboost}
 start_time <- Sys.time()
 
-training.x <- model.matrix(more_50k~ .  , data = data_training)
-testing.x  <- model.matrix(more_50k ~ . , data = data_testing)
+training.x <- model.matrix(more_50k ~ . -education_num , data = data_training)
+testing.x  <- model.matrix(more_50k ~ . -education_num, data = data_testing)
 
 model_XGboost<-xgboost(data = data.matrix(training.x[,-1]), 
                        label = as.numeric(as.character(data_training$more_50k)), 
@@ -129,7 +118,7 @@ XGboost_prediction<-predict(model_XGboost,newdata=testing.x[,-1], type="response
 
 ###Display confusion matrix
 ```{r xgb_cm}
-xgb_cm<-confusionMatrix(as.factor(ifelse(XGboost_prediction>0.29,1,0)),data_testing$more_50k,positive="1")
+xgb_cm<-confusionMatrix(as.factor(ifelse(XGboost_prediction>0.3,1,0)),data_testing$more_50k,positive="1")
 xgb_cm
 ```
 ##ROC Curve
