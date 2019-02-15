@@ -232,13 +232,13 @@ write.csv(round(thecor,2), file = "thecor.csv")
 
 **Answers:**
 
-1 - Yes, they make sense. Correlations are listed below: 
-* Q.3/9/26:   High personal status (ego) 
-* Q.6/7:      Rewarding yourself for hardwork (success) 
-* Q.16/17/20: Professional or Enthusiast relation with boats 
-* Q.20/27/28: Passionate and knowledgeable about the subject
+1 - Yes, they make sense. Correlations are listed below:  
+* Q.3/9/26:   High personal status (ego)  
+* Q.6/7:      Rewarding yourself for hardwork (success)  
+* Q.16/17/20: Professional or Enthusiast relation with boats  
+* Q.20/27/28: Passionate and knowledgeable about the subject  
 
-2 - It suggests that we don't need to include every single question as a factor in the analysis, because those questions will address the same factor
+2 - It suggests that we don't need to include every single question as a factor in the analysis, because those questions will address the same factor  
 
 
 ## Step 4: Choose number of factors
@@ -287,9 +287,9 @@ iplot.df(melt(df, id="components"))
 
 **Answers**
 
-1 - The table shows eigenvalues, which indicate what percentage of variation in the dataset is exdplained by a few key components. Looking for a cumulative percentage of explained variance above 65% is a good threshold.  
+1 - The table shows eigenvalues, which indicate what percentage of variation in the dataset is explained by a few key components. Looking for eigenvalues bigger than one or a cumulative percentage of explained variance above 65% is a good threshold.  
 
-2 - The plot visually shows the "elbow" of the data, determining a good starting point to analyze how many factors we should include in our analysis. Also, it provides the "1" baseline, setting a cutting point for variables that provide very little explanation for the variance (diminishing returns). Ideally, as few components as possible should have as high eigenvalues as possible. 
+2 - The plot visually shows the "elbow" of the data, determining a good starting point to analyze how many factors we should include in our analysis. Also, it provides the "1" baseline, setting a cutting point for variables that provide very little explanation for the variance (diminishing returns). Ideally, as few components as possible should have as high eigenvalues and cumulative variance explanation as possible.  
 
 
 
@@ -343,11 +343,11 @@ write.csv(Rotated_Factors_thres, file = "Rotated_Factors_thres.csv")
 
 **Answers**
 
-1 - Factor 1 indicates highly brand- conscious customers who view their boat as a status symbol. Factor 2 indicates outdoor enthusiasts who enjoy active lifestyle. Factor 3 indicates customers who value convenience and reliability which they seek in a high-quality reputable product. The factors make business sense as they indicate observable attributes and benefits that customers seek from their boats.
+1 - Factor 1 indicates highly brand- conscious customers who view their boat as a status symbol. Factor 2 indicates outdoor enthusiasts who enjoy active lifestyle. Factor 3 indicates customers who value convenience and reliability which they seek in a high-quality reputable product. The factors make business sense as they indicate observable attributes and benefits that customers seek from their boats.  
 
-2 - Having used eigenvalues, 3 variations in the manual settings, and minimum variance-explained threshold of 20% and 5%, we conclude that eigenvalues provide strongest statistical, business and interpretatuve arguments for factor selection criteria. On the basis of of eigenvalues we conclude there are 5 different factors explaining 52.74% of the cumulative variance in the dataset.
+2 - Having used eigenvalues, 3 variations in the manual settings, and minimum variance-explained threshold of 20% and 5%, we conclude that eigenvalues provide strongest statistical, business and interpretative  arguments for factor selection criteria. On the basis of eigenvalues we conclude there are 5 different factors explaining 52.74% of the cumulative variance in the dataset.  
 
-3 - Data science provides us with statistically robust tools to consume information. The interpretation of the results however should be based on business acumen and how actionable (e.g., whether the sementation allows to identify and target mutually exclusive customer segments for an optimal allocation of resources) the insights from the data are.  
+3 - Data science provides us with statistically robust tools to consume information. The interpretation of the results however should be based on business acumen and how actionable (e.g., whether the segmentation  allows to identify and target mutually exclusive customer segments for an optimal allocation of resources) the insights from the data are. Nevertheless, only information that aids decision making or that changes current decision has an actual value. 
 
 ## Step 6:  Save factor scores 
 
@@ -368,11 +368,11 @@ write.csv(NEW_ProjectData, file = "FactorScores.csv")
 
 **Answers**
 
-Component 1 - Q1.9
-Component 2 - Q1.18
-Component 3 - Q1.4
-Component 4 - Q1.11
-Component 5 - Q1.2
+Component 1 - Q1.9  
+Component 2 - Q1.18  
+Component 3 - Q1.4  
+Component 4 - Q1.11  
+Component 5 - Q1.2  
 
 <hr>\clearpage
 
