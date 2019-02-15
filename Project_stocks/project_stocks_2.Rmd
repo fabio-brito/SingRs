@@ -46,13 +46,6 @@ which(c(data_working$ASKHI.T.5,data_working$ASKHI.T.4, data_working$ASKHI.T.3, d
 # Confirm no 0s
 ```
 
- 
- - check for negative values - closing ask.
- - check for positive values - highest trade
-
-PRC
- - check for negative values - this is a bid/ask average (can ignore the negative sign)
-
 Numtrd 
  - check for 99 (means number unavailable)
 ```{r, check Numtrd}
