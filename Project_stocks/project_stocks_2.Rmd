@@ -174,13 +174,13 @@ par(mfrow=c(1,1))
 
 ##GLM model prediction
 
-Predict classification using 0.5 threshold. 
+Predict classification using 0.6 threshold. Why? Random guess! 
 An alternative code: logistic_classification <- as.integer(logistic_probabilities > mean(testing$Default.0 == "1"))
 
 ```{r glm_predictions}
 logistic_probabilities<-predict(model_logistic_stepwiseAIC,newdata=testing,type="response") 
 logistic_classification<-rep("0",length(testing$MOVEMENT.T.0))
-logistic_classification[logistic_probabilities>1-0.5]="1"
+logistic_classification[logistic_probabilities>1-0.6]="1"
 logistic_classification<-as.factor(logistic_classification)
 ```
 
@@ -195,4 +195,32 @@ glm_cm
 logistic_ROC_prediction <- prediction(logistic_probabilities, testing$MOVEMENT.T.0)
 logistic_ROC <- performance(logistic_ROC_prediction,"tpr","fpr") 
 plot(logistic_ROC)
+```
+
+## Ctree
+```{r ctree}
+ctree_tree<-ctree(MOVEMENT.T.0~.,data=training) 
+plot(ctree_tree, gp = gpar(fontsize = 8)) 
+ctree_probabilities<-predict(ctree_tree,newdata=testing,type="prob")
+ctree_classification<-rep("0",length(testing$default_0))
+ctree_classification[ctree_probabilities[,2]>1-0.7]="1" 
+ctree_classification<-as.factor(ctree_classification)
+```
+
+##CTREE confustion matrix
+```{r ctree_confusion_matrix}
+ctree_cm<-confusionMatrix(ctree_classification, testing$MOVEMENT.T.0,positive = "1")
+ctree_cm
+```
+
+##Predict probabilities and calculate errors
+```{r rpart_prediction_prob}
+ctree_probabilities_testing <-predict(ctree_tree,newdata=testing,type = "prob")
+ctree_pred_testing <- prediction(ctree_probabilities_testing[,2], testing$MOVEMENT.T.0)
+```
+
+##ROC
+```{r rpart_roc}
+ctree_ROC_testing <- performance(ctree_pred_testing,"tpr","fpr")
+plot(ctree_ROC_testing)
 ```
