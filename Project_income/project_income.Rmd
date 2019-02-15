@@ -102,8 +102,11 @@ logistic_classification<-as.factor(logistic_classification)
 
 ##GLM Confusion matrix
 ```{r glm_confusion_matrix}
+data_testing$more_50k <- as.factor(data_testing$more_50k)
 glm_cm<-confusionMatrix(logistic_classification, data_testing$more_50k, positive = "1")
 glm_cm
+
+
 ```
 
 ##GLM ROC Curve
