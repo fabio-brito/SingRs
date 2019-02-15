@@ -151,3 +151,48 @@ forest_AUC
 plotLift(forest_probabilities[,2],  testing$MOVEMENT.T.0, cumulative = TRUE, n.buckets = 10)
 ```
 
+## GLM model
+
+```{r}
+model_logistic_glm <- glm(MOVEMENT.T.0~., data=training, family="binomial"(link="logit"))
+summary(model_logistic_glm)
+
+model_logistic_stepwiseAIC<-stepAIC(model_logistic_glm,direction = c("both"),trace = 1) #AIC stepwise
+summary(model_logistic_stepwiseAIC)
+```
+
+```{r glm_steps}
+model_logistic_stepwiseAIC<-stepAIC(model_logistic_glm,direction = c("both"),trace = 1) #AIC stepwise
+summary(model_logistic_stepwiseAIC)
+```
+
+```{r glm_plots}
+par(mfrow=c(1,4))
+plot(model_logistic_stepwiseAIC)
+par(mfrow=c(1,1))
+```
+
+##GLM model prediction
+
+Predict classification using 0.5 threshold. 
+An alternative code: logistic_classification <- as.integer(logistic_probabilities > mean(testing$Default.0 == "1"))
+
+```{r glm_predictions}
+logistic_probabilities<-predict(model_logistic_stepwiseAIC,newdata=testing,type="response") 
+logistic_classification<-rep("0",length(testing$MOVEMENT.T.0))
+logistic_classification[logistic_probabilities>1-0.5]="1"
+logistic_classification<-as.factor(logistic_classification)
+```
+
+##GLM Confusion matrix
+```{r glm_confusion_matrix}
+glm_cm<-confusionMatrix(logistic_classification, testing$MOVEMENT.T.0, positive = "1")
+glm_cm
+```
+
+##GLM ROC Curve
+```{r glm_ROC}
+logistic_ROC_prediction <- prediction(logistic_probabilities, testing$MOVEMENT.T.0)
+logistic_ROC <- performance(logistic_ROC_prediction,"tpr","fpr") 
+plot(logistic_ROC)
+```
