@@ -144,6 +144,14 @@ plotLift(forest_probabilities[,2],  testing$Movement.T.0, cumulative = TRUE, n.b
 
 ###Description 
 
+We tried to predict teh S&P's value for the next year using a set of time series forecasting methods - ETS, TBATS and auto arima.
+
+For ETS, the model was unable to accomodate seasonality across a frequency of 252, hence we resolved to MAN parameters (multiplicative ERROR, additive TREND, no SEASONALITY).
+
+TBATS and auto-arima do a better job at handling possible seasonality - a forecast for the next cycle is illustrated below.
+
+ACF residuals appear to be within bounds - however the forecast does not appear very informative. The index is expected to remain flat albeit with room for volatility within 85% and 90% confidence bands.
+
 ###Loading the data
 ```{r p2_dataloading}
 getSymbols(c("^GSPC","^VIX"),from = as.Date("2009-01-01"), to = as.Date("2019-02-14"))
