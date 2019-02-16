@@ -103,13 +103,6 @@ forest_ROC_prediction <- performance(forest_ROC_prediction,"tpr","fpr")
 plot(forest_ROC_prediction)
 ```
 
-###AUC (area under curve)
-```{r rf_auc}
-AUC.tmp <- performance(forest_ROC_prediction,"auc") 
-forest_AUC <- as.numeric(AUC.tmp@y.values) 
-forest_AUC 
-```
-
 ###Lift chart
 ```{r rf_lift}
 plotLift(forest_probabilities[,2],  testing$Movement.T.0, cumulative = TRUE, n.buckets = 10)
