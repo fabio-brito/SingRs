@@ -68,7 +68,7 @@ rotation_used = "varimax"
 # Please ENTER then original raw attributes to use for the segmentation (the "segmentation attributes")
 # Please use numbers, not column names, e.g. c(1:5, 7, 8) uses columns 1,2,3,4,5,7,8
 #segmentation_attributes_used = c(28,25,27,14,20,8,3,12,13,5,9,11,2,30,24) # FOR BOATS DATA
-segmentation_attributes_used = c(10, 19, 5, 12, 3)
+segmentation_attributes_used = c(10, 19, 5, 12, 3, 24, 26, 11, 30, 2)
 
 #segmentation_attributes_used = c(1:5) # FOR MBA DATA
 #segmentation_attributes_used = c(2:7) # FOR SHOPPING MALL DATA
@@ -343,11 +343,11 @@ write.csv(Rotated_Factors_thres, file = "Rotated_Factors_thres.csv")
 
 **Answers**
 
-1 - Factor 1 indicates highly brand- conscious customers who view their boat as a status symbol. Factor 2 indicates outdoor enthusiasts who enjoy active lifestyle. Factor 3 indicates customers who value convenience and reliability which they seek in a high-quality reputable product. The factors make business sense as they indicate observable attributes and benefits that customers seek from their boats.  
+1 - Yes, they make business sense, because those Factors are dimensions clients evaluate when purchasing a boat. Factor 1 indicates prestige and social status associated with boating. Factor 2 indicates adventure and explorations associated with boating. Finally, Factor 3 portrays brand equity, meaning how the brand conveys value.
 
-2 - Having used eigenvalues, 3 variations in the manual settings, and minimum variance-explained threshold of 20% and 5%, we conclude that eigenvalues provide strongest statistical, business and interpretative  arguments for factor selection criteria. On the basis of eigenvalues we conclude there are 5 different factors explaining 52.74% of the cumulative variance in the dataset.  
+2 - Having used eigenvalues, 3 variations in the manual settings, and minimum variance-explained threshold of 20% and 5%, we conclude that eigenvalues provide strongest statistical, business and interpretative  arguments for factor selection criteria. On the basis of eigenvalues we conclude there are 5 different factors explaining 52.74% of the cumulative variance in the dataset. Furthermore, we also included 5 extra questions that scored very low for all factors to insure any variability they uniquely represent does not escape from our segmentation.  
 
-3 - Data science provides us with statistically robust tools to consume information. The interpretation of the results however should be based on business acumen and how actionable (e.g., whether the segmentation  allows to identify and target mutually exclusive customer segments for an optimal allocation of resources) the insights from the data are. Nevertheless, only information that aids decision making or that changes current decision has an actual value. 
+3 - Data science provides us with statistically robust tools to consume information. The interpretation of the results however should be based on business acumen and how actionable (e.g., whether the segmentation  allows to identify and target mutually exclusive customer segments for an optimal allocation of resources) the insights from the data are. It is also important to ensure that elements that loads onto factors present a cohesive picture of a targeted motivation or dimension, meaning that factors should overlap as less as possible. Nevertheless, only information that aids decision making or that changes current decision has an actual value. 
 
 ## Step 6:  Save factor scores 
 
@@ -368,11 +368,17 @@ write.csv(NEW_ProjectData, file = "FactorScores.csv")
 
 **Answers**
 
+Considering the initial strategy of picking only the questions with the biggest factor loading, we derived the following list as segmentation attributes: 
 Component 1 - Q1.9  
 Component 2 - Q1.18  
 Component 3 - Q1.4  
 Component 4 - Q1.11  
 Component 5 - Q1.2  
+
+However, to not lose any important differences, we included variables that failed to feature a high loading for any of the factors. Therefore, we included the following questions on the segmentation:  
+
+Q.1, Q.10, Q.23, Q.25, Q.29   
+
 
 <hr>\clearpage
 
@@ -562,16 +568,16 @@ iprint.df(round(cluster_profile_ratios-1, 2))
 
 **Answers**
 
-*
-*
-*
-*
-*
-*
-*
-*
-*
-*
+1 - The questions Q1.1 to Q1.29 represent the relative strength a certain need or motivation has for members of that segment. The questions Q2 to Q18 represent certain demographics and purchase process and behaviours that overrepresent in certain segments. The numbers with the largest absolute values are the most informative. 
+
+2 - Relative to the population, on average:   
+OBS: Segment letter is not tied to the segment numbers, since they rotate every time the document is Knit  
+Segment A: Q1.11 (-1.15) - not engaged enough to repair own boat  
+Segment B: Q1.25 (-1.12) - do not care about being in charge of the boat  
+Segment C: Q1.9  (-0.70) - do not associate the boat with social status  
+Segment D: Q1.2  (+1.19) - values lower price over brand  
+Segment E: Q1.23 (+0.78) - believe their boat allows them to excel in sports   
+
 
 ## Step 8: Robustness Analysis
 
@@ -585,8 +591,13 @@ We should also consider the robustness of our analysis as we change the clusteri
 
 **Answers**
 
-*
-*
+1 - Statistically, the elbow for the plot of distances can be observed around 5 and 6 segments. Beyond that, the distances are not signifcation to justify the creation of more clusters. Interpretation and business wise, we attempted clustering with 3, 4, 5, and 6 segments and found that 5 segments present the most cohesive picture in terms of deferring attitudes and motivations towards boating.  
+
+2 -
+OBS: Segment letter is not tied to the segment numbers, since they rotate every time the document is Knit 
+Segment E: They see themselves as experts in terms of boat experience (Q8), the own or a looking for boats with higher HP (Q5), and will probably buy a new boat in the future (Q3)
+
+Segment 2:
 *
 *
 *
