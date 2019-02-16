@@ -9,6 +9,12 @@ library("plotly")
 library("scales")
 ```
 
+Introduction
+In this we take Us census data to see how well we can predict, based on demographic data, whether someone will have an income of over $50k USD.
+
+Method
+We downloaded data from the Wharton CRSP database, covering various factors of individuals in the US population, such as age, race, gender, education level, marital status, occupation, country of origin, etc. and used various regression models to see whether we could predict whether or not they would earn over $50k. 
+
 # Loading data
 ```{r data_loading}
 data_training <- read_excel("adult.data.xlsx", sheet =1, col_names = TRUE, na = '')
@@ -17,8 +23,8 @@ data_testing <- read_excel("adult.test.xlsx", sheet =1, col_names = TRUE, na = '
 str(data_training)
 str(data_testing)
 ```
-## Data adjustments
 
+## Data adjustments
 ```{r data_adjustment}
 
 data_training$age <- as.integer(data_training$age)
