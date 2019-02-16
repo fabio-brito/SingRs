@@ -87,7 +87,6 @@ data_working$Movement.T.0 <- as.factor(data_working$Movement.T.0)
 str(data_working)
 ```
 
-
 ###Split the data into testing and training
 ```{r data_split_cleaning}
 train_general <- data_working[1:3500,]
@@ -102,6 +101,8 @@ testing <- train_general[ -inTrain,]
 ```
 
 ###Random forest - only dynamic variables
+Random forest analysis showed that total valuation return are the most significant variables in the model. 
+
 ```{r random_forest}
 start_time <- Sys.time()
 model_forest <- randomForest(Movement.T.0~., data=training, importance=TRUE, proximity=TRUE,  type="classification")
@@ -143,14 +144,6 @@ plotLift(forest_probabilities[,2],  testing$Movement.T.0, cumulative = TRUE, n.b
 #Part 2. Forecasting S&P500 movement using time series analysis
 
 ###Description 
-
-We tried to predict teh S&P's value for the next year using a set of time series forecasting methods - ETS, TBATS and auto arima.
-
-For ETS, the model was unable to accomodate seasonality across a frequency of 252, hence we resolved to MAN parameters (multiplicative ERROR, additive TREND, no SEASONALITY).
-
-TBATS and auto-arima do a better job at handling possible seasonality - a forecast for the next cycle is illustrated below.
-
-ACF residuals appear to be within bounds - however the forecast does not appear very informative. The index is expected to remain flat albeit with room for volatility within 85% and 90% confidence bands.
 
 ###Loading the data
 ```{r p2_dataloading}
