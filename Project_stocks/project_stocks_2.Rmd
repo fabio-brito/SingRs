@@ -245,9 +245,11 @@ Considering all the factors that impact the movement of stocks the key outcome i
 
 As of next steps to furthe improve the model the work could be done in the following directions:
 - Data
-Data could be enriched with  
+Data could be enriched with other variables such as sentiment analysis of news and social media, macroeconomics, bonds, geopolitical events etc.
 - Math and algorithms
+On the math and algorithms side the main idea to identify the most optimal and accurate algorithm
 - Computational power
+Within the computational power the idea is to process as much data as possible at cheapest price
 
 
 
