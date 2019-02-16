@@ -192,6 +192,13 @@ acf(residuals(vix_model_arima))
 
 #Part 3. Forecasting S&P500 movement using Hidden Markov Model 
 
+Markov models
+System state is fully observable	System state is partially observable
+System is autonomous	Markov chain	Hidden Markov model
+System is controlled	Markov decision process	Partially observable Markov decision process
+
+
+
 ```{r hmm, echo=FALSE}
 ts = ldhmm.ts_log_rtn("spx", on ="days")
 sapply(0:10, function (drop) kurtosis(ldhmm.drop_outliers(ts$x, drop)))
@@ -232,8 +239,8 @@ ldhmm.plot_spx_vix_obs(hd, end.date = as.Date("2019-02-14"),insert.plot = FALSE)
 ```
 
 
-#Part 4. Lessons learned
+#Part 4. Next steps
 
-Predicting the movement of a stock is difficult! This makes sense, as stock movements rely on a lot more than simply the factors captured in the data - sentiment analysis, market movements, political events - so our model was unlikely to be able to predict much of the variance.
+Considering all the factors that impact the movement of stocks the key outcome is that predicting the movement is incredibly complicated task. Stock movements rely on a lot more than simply the factors captured in the data - sentiment analysis, market movements, political events - so our model was unlikely to be able to predict much of the variance.
 
 
