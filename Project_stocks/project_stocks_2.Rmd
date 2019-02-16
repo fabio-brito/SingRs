@@ -145,7 +145,7 @@ plotLift(forest_probabilities[,2],  testing$Movement.T.0, cumulative = TRUE, n.b
 
 ###Description 
 
-We tried to predict teh S&P's value for the next year using a set of time series forecasting methods - ETS, TBATS and auto arima.
+We tried to predict the S&P Index's value for the next year using a set of time series forecasting methods - ETS, TBATS and auto arima.
 
 For ETS, the model was unable to accomodate seasonality across a frequency of 252, hence we resolved to MAN parameters (multiplicative ERROR, additive TREND, no SEASONALITY).
 
