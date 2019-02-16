@@ -65,8 +65,7 @@ data_working <- p1_data_general
 
 For the model we've created a lagged variables for yesterday (T.1), the day before yesterday (T.2) and 30 days before yesterday (T.30). 
 
-- Data dictionary
-
+- Data dictionary:
 сaldt - Calendar date
 ewretd - Equal-Weighted Return (includes distributions)	
 ewretx -	Equal-Weighted Return (excluding dividends)	
@@ -82,14 +81,15 @@ chusdval - Change in usdval
 vol - Volatility calculated as 30-days average volatility
 Movement - index movement (if 1 index went up, 0 - down)
 
-
-###Split the data into testing and training
 ```{r data_split_cleaning}
 data_working$caldt <- as.Date(as.character(data_working$caldt), "%Y%m%d")
 data_working$Movement.T.0 <- as.factor(data_working$Movement.T.0)
-
 str(data_working)
+```
 
+
+###Split the data into testing and training
+```{r data_split_cleaning}
 train_general <- data_working[1:3500,]
 test_general <- data_working[3501:4469,]
 test_general_womov <- test_general
@@ -102,7 +102,6 @@ testing <- train_general[ -inTrain,]
 ```
 
 ###Random forest - only dynamic variables
-
 ```{r random_forest}
 start_time <- Sys.time()
 model_forest <- randomForest(Movement.T.0~., data=training, importance=TRUE, proximity=TRUE,  type="classification")
