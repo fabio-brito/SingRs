@@ -41,14 +41,19 @@ ldhmm.calc_stats_from_obs(hd, drop=11)
 
 ldhmm.oxford_man_plot_obs(hd)
 
-states_prob <- as.data.frame(hd@states.prob)
-
-write.csv(obs,"states_prob.csv")
-  
 ```
 
 
+
 ```{r hmm_2}
+states_prob <- t(as.data.frame(hd@states.global.stats))
+
+write.csv(states_prob,"states_prob.csv")
+
+
+```
+
+```{r hmm_3}
 
 hs<-ldhmm.simulate_state_transition(hd, init =100000)
 kurtosis(hs@observations)

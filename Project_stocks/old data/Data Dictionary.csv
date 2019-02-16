@@ -1,0 +1,29 @@
+date,,,,,,,Date of the data
+BIDLO.T-5,BIDLO.T-4,BIDLO.T-3,BIDLO.T-2,BIDLO.T-1,BIDLO.T-0,,"Bid or Low Price is the lowest trading price during the day, or the closing bid price on days when the closing price is not available. The field is set to zero if no Bid or Low Price is availabl"
+ASKHI.T-5,ASKHI.T-4,ASKHI.T-3,ASKHI.T-2,ASKHI.T-1,ASKHI.T-0,,"Ask or High Price is the highest trading price during the day, or the closing ask price on days when the closing price is not available. The field is set to zero if no Ask or High Price is available. If the Price or Bid/Ask Average is negative, this field contains the closing ask. If positive, the field contains the highest trade."
+PRC.T-5,PRC.T-4,PRC.T-3,PRC.T-2,PRC.T-1,PRC.T-0,,"Prc is the closing price or the negative bid/ask average for a trading day. If the closing price is not available on any given trading day, the number in the price field has a negative sign to indicate that it is a bid/ask average and not an actual closing price. Please note that in this field the negative sign is a symbol and that the value of the bid/ask average is not negative."
+VOL.T-5,VOL.T-4,VOL.T-3,VOL.T-2,VOL.T-1,VOL.T-0,,VOL is the total number of shares of a stock sold on day I. It is expressed in units of one share
+BID.T-5,BID.T-4,BID.T-3,BID.T-2,BID.T-1,BID.T-0,,Bid price at the end of that day
+ASK.T-5,ASK.T-4,ASK.T-3,ASK.T-2,ASK.T-1,ASK.T-0,,Ask price at the end of that day
+SHROUT.T-5,SHROUT.T-4,SHROUT.T-3,SHROUT.T-2,SHROUT.T-1,SHROUT.T-0,,"SHROUT is the number of publicly held shares, recorded in thousands"
+OPENPRC.T-5,OPENPRC.T-4,OPENPRC.T-3,OPENPRC.T-2,OPENPRC.T-1,OPENPRC.T-0,,The price of the first trade after market opens
+NUMTRD.T-5,NUMTRD.T-4,NUMTRD.T-3,NUMTRD.T-2,NUMTRD.T-1,NUMTRD.T-0,,"contains the number of trades made on the Nasdaq Stock Market each date for a security. Trades on all exchanges are connected to Nasdaqs composite pricing network and all paper trades are included in the count. If the number of trades is unavailable, the field is set to 99."
+RETX.T-5,RETX.T-4,RETX.T-3,RETX.T-2,RETX.T-1,RETX.T-0,,RETX contains returns without dividends. Ordinary dividends and certain other regularly taxable dividends are excluded from the returns calculation. 
+,,,,,MOVEMENT.T-0,,
+SPR.T-5,SPR.T-4,SPR.T-3,SPR.T-2,SPR.T-1,SPR.T-0,,Spread - the difference between ASKHI and BIDLO on the same day
+VOLA_PRC,,,,,,,Volatility of closing price - measured by the std deviation in closing prices over the last 5 days
+VOLA_RETX,,,,,,,Volatility of returns - measured by the std deviation in returns over the last 5 days
+,,,,,,,
+,,,,,,,
+,,,,,,,
+Variable Name,Data Type,Variable Description,Help,,,,
+ewretd,NUM,Equal-Weighted Return (includes distributions),,,,,
+ewretx,NUM,Equal-Weighted Return (excluding dividends),,,,,
+spindx,NUM,Level on S&P Composite Index,,,,,
+sprtrn,NUM,Return on S&P Composite Index,,,,,
+totcnt,NUM,Total Market Count,,,,,
+totval,NUM,Total Market Value,,,,,
+usdcnt,NUM,Count of Securities Used,,,,,
+usdval,NUM,Market Value of Securities Used,,,,,
+vwretd,NUM,Value-Weighted Return (includes distributions),,,,,
+vwretx,NUM,Value-Weighted Return (excluding dividends),,,,,
