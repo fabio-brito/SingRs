@@ -206,7 +206,6 @@ System is autonomous	Markov chain	Hidden Markov model
 System is controlled	Markov decision process	Partially observable Markov decision process
 
 
-
 ```{r hmm, echo=FALSE}
 ts = ldhmm.ts_log_rtn("spx", on ="days")
 sapply(0:10, function (drop) kurtosis(ldhmm.drop_outliers(ts$x, drop)))
