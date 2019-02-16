@@ -81,7 +81,7 @@ chusdval - Change in usdval
 vol - Volatility calculated as 30-days average volatility
 Movement - index movement (if 1 index went up, 0 - down)
 
-```{r data_split_cleaning}
+```{r data_adj}
 data_working$caldt <- as.Date(as.character(data_working$caldt), "%Y%m%d")
 data_working$Movement.T.0 <- as.factor(data_working$Movement.T.0)
 str(data_working)
@@ -190,7 +190,7 @@ plot(vix_model_tbats_pred)
 plot(vix_model_arima_pred)
 
 #automatically fits the ARIMA model (auto-regressive integrated moving average)
-acf(residuals(vix_model_pred))
+acf(residuals(vix_model_ets_pred))
 acf(residuals(vix_model_tbats_pred))
 acf(residuals(vix_model_arima))
 
