@@ -153,20 +153,9 @@ vix_data = as.data.frame(merge(GSPC,VIX))
 vix_data <- data.frame(date = row.names(vix_data), vix_data, row.names = NULL)
 vix_data$date <- as.Date(vix_data$date, "%Y-%m-%d")
 
-<<<<<<< HEAD
-str(vix_data)
-
-as.Date(vix_data$date, "%Y-%m-%d")
-
 vix_data_ts <- ts(vix_data$GSPC.Adjusted, start= c(2009, 02, 01), end=c(2019,2,13), frequency=252)
 
-plot (vix_data$date,vix_data$GSPC.Adjusted)
-=======
-vix_data <- ts(vix_data$VIX.Adjusted, start = 2009-01-02, frequency = 252)
-
-plot (vix_data[date],vix_data$GSPC.Adjusted)
-lines(vix_data$date,vix_data$GSPC.Adjusted,col="blue")
->>>>>>> e99f4f1ed13cd3903301862f40c1ca14c774f55b
+plot (vix_data$date,vix_data$GSPC.Adjusted, type = "l")
 
 par(new = TRUE)
 plot (vix_data$date,vix_data$VIX.Adjusted,type = "l", axes = FALSE, bty = "n", xlab = "", ylab = "")
@@ -186,7 +175,7 @@ vix_model_tbats_pred <-forecast(vix_data_ts, h=252, level=c(0.8, 0.95))
 vix_model_arima <- auto.arima(vix_data$VIX.Adjusted,seasonal=TRUE)
 vix_model_arima_pred <-forecast(vix_data_ts, h=252, level=c(0.8, 0.95))
 
-par(mfrow=c(1,3))
+par(mfrow=c(3,1))
 
 plot(vix_model_ets_pred)
 plot(vix_model_tbats_pred)
@@ -196,7 +185,6 @@ plot(vix_model_arima_pred)
 acf(residuals(vix_model_pred))
 acf(residuals(vix_model_tbats_pred))
 acf(residuals(vix_model_arima))
-
 
 ```
 
