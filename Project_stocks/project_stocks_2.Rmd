@@ -6,22 +6,30 @@ date: "February 16, 2019"
 
 ##Introduction
 
-Business objective
-We are seeing whether we can predict the movement of the S&P 500 index based on a number of factors at T-30 days, T-2 days and T-1 day.
+- Business objective. 
+Predicting movements of stock market is a big topic today within the financial industry. Banks, hedge funds and other organizations always in the constant research to improve accuracy of prediction and therefore to maximize return for investors.
 
-Data
-We downloaded S&P data from CRSP, the Wharton data platform for financial data.
+Purpose of this project is make an attemp to predict the movement of S&P 500 index. 
 
-Process
-We began by downloading and cleaning the data, and splitting it into testing and training. 
+- Process
+The analysis is splitted into three parts:
+1) Application of random forest on data about S&P 500 index
+2) Time series analysis and prediction using ets and arima
+3) Reproduction of Hidden Markov Model for Financial Time Series and Its Application to S&P 500 Index paper by Stephen H.-T. Lihn to illustrate Hidden Markov Model application
 
-We  then tried several models to predict the movement of the stock, namely Random Forest, an ETS Arima model, and finally the Hidden Markov Model, and compared the results of each. 
+- Data
+Most of the financial data on the S&P 500 index is downloaded from CRSP data depository at Wharton Research Data Services
+Also data on the volatility index is being scrapped from CBOE using quantmod package and getSymbols function
+For Hidden Markov Model we use package ldhmm. All the data for S&P 500 and VIX index is predownloaded in the package.  
 
-Results
-Success was mixed - ADD MORE HERE
+- Results
+As we said in the beginning prediction of stock market movement is a complicated task that requires not only  full and comprehensive understanding of stock market, macro environment, political situation etc but also a lot of computational power and knowledge of advanced math and statistical tools. 
 
-Acknowledgement: Christos Oikonomou, Frederico Belo, Ahmed Guecioueur  
-Reproduction of Hidden Markov Model for Financial Time Series and Its Application to S&P 500 Index by Stephen H.-T. Lihn (https://cran.r-project.org/web/packages/ldhmm/vignettes/ldhmm-spx.pdf)
+Our analysis showed that using random forest with limited data gives model with 53% accuracy, time series analysis model produces massive error and only HMM could predict volatility with certain degree of accuracy.  
+
+-Acknowledgement: 
+Christos Oikonomou, Phd INSEAD, Frederico Belo, Associate Professor of Finance, Ahmed Guecioueur, Phd INSEAD  
+Paper by Stephen H.-T. Lihn "Hidden Markov Model for Financial Time Series and Its Application to S&P 500 Index (https://cran.r-project.org/web/packages/ldhmm/vignettes/ldhmm-spx.pdf)
 
 
 ```{r setup, include=FALSE, warning=FALSE}
@@ -41,15 +49,23 @@ library(forecast)
 library(fpp)
 library(xts)
 library(scales)
-
 ```
 
-#Part 1. Prediction of S&P500 movement using Random Forest 
+#Part 1. Prediction of S&P 500 movement using Random Forest 
+
+In the first part of the analysis we process S&P 500 index data in random forest to indentify whether we can predict the next day movement. 
+
+Data is being taken from CRSP WRDS.
+
 ## Load data
 ```{r data_loading}
 p1_data_general <- read.csv("sp500_master_woT0.csv")
 data_working <- p1_data_general
 ```
+
+For the model we've created a lagged variables for yesterday (T.1), the day before yesterday (T.2) and 30 days before yesterday (T.30). 
+
+
 
 
 ###Split the data into testing and training
@@ -87,6 +103,8 @@ varImpPlot(model_forest)
 
 Finding predicitons: probabilities and classification
 
+Confustion matrix analysis showed the accuracy of 53%, which is above flip-a-coin probability. Considering that stock market movements are 
+
 ```{r rf_predictions}
 forest_probabilities<-predict(model_forest,newdata=testing,type="prob") 
 forest_classification<-rep("0",length(testing$Movement.T.0))
@@ -94,7 +112,6 @@ forest_classification[forest_probabilities[,2]>0.5]="1"
 forest_classification<-as.factor(forest_classification)
 confusionMatrix(forest_classification,testing$Movement.T.0, positive="1")
 ```
-
 
 ###ROC Curve
 ```{r rf_roc}
@@ -119,7 +136,9 @@ getSymbols(c("^GSPC","^VIX"),from = as.Date("2009-01-01"), to = as.Date("2019-02
 
 vix_data = as.data.frame(merge(GSPC,VIX))
 vix_data <- data.frame(date = row.names(vix_data), vix_data, row.names = NULL)
+vix_data$date <- as.Date(vix_data$date, "%Y-%m-%d")
 
+<<<<<<< HEAD
 str(vix_data)
 
 as.Date(vix_data$date, "%Y-%m-%d")
@@ -127,13 +146,17 @@ as.Date(vix_data$date, "%Y-%m-%d")
 vix_data_ts <- ts(vix_data$GSPC.Adjusted, start= c(2009, 02, 01), end=c(2019,2,13), frequency=252)
 
 plot (vix_data$date,vix_data$GSPC.Adjusted)
+=======
+vix_data <- ts(vix_data$VIX.Adjusted, start = 2009-01-02, frequency = 252)
+
+plot (vix_data[date],vix_data$GSPC.Adjusted)
+lines(vix_data$date,vix_data$GSPC.Adjusted,col="blue")
+>>>>>>> e99f4f1ed13cd3903301862f40c1ca14c774f55b
 
 par(new = TRUE)
 plot (vix_data$date,vix_data$VIX.Adjusted,type = "l", axes = FALSE, bty = "n", xlab = "", ylab = "")
 lines(vix_data$date,vix_data$VIX.Adjusted,col="red")
 axis(side=4, at = pretty(range(vix_data$VIX.Adjusted)))
-abline(h=20,col = "gray60")
-abline(h=30,col = "green")
 ```
 
 
@@ -166,7 +189,7 @@ acf(residuals(vix_model_arima))
 
 #Part 3. Forecasting S&P500 movement using Hidden Markov Model 
 
-```{r hmm}
+```{r hmm, echo=FALSE}
 ts = ldhmm.ts_log_rtn("spx", on ="days")
 sapply(0:10, function (drop) kurtosis(ldhmm.drop_outliers(ts$x, drop)))
 ldhmm.ts_abs_acf(ts$x,drop =0 , lag.max =6)
@@ -190,10 +213,17 @@ hd@delta
 ldhmm.ld_stats(hd)
 hd@states.local.stats
 ldhmm.ld_stats(hd)
+```
 
+```{r hmm_2}
 
 ldhmm.calc_stats_from_obs(hd, drop=11)
 ldhmm.oxford_man_plot_obs(hd, insert.plot = FALSE)
+
+
+```
+
+```{r hmm_3}
 ldhmm.plot_spx_vix_obs(hd, end.date = as.Date("2019-02-14"),insert.plot = FALSE)
 
 ```
