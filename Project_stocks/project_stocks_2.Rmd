@@ -236,7 +236,10 @@ ldhmm.ld_stats(hd)
 ldhmm.calc_stats_from_obs(hd, drop=11)
 ldhmm.oxford_man_plot_obs(hd, insert.plot = FALSE)
 ```
-
+```{r hmm_3}
+knitr::include_graphics("Markov_Model_10MM.png")
+knitr::include_graphics("Markov_Model_10MMchart.png")
+```
 
 #Part 4. Next steps
 
