@@ -218,7 +218,7 @@ mu_1 = 0.0006
 sigma_1 = 0.01
 mu_2 = 0.0007
 sigma_2 = 0.02
-m = 3
+m = 2
 
 param0=matrix(c(mu_1, sigma_1, mu_2, sigma_2), m, 2, byrow=TRUE)
 gamma0=ldhmm.gamma_init(m)
@@ -234,21 +234,20 @@ ldhmm.ld_stats(hd)
 ```
 
 ```{r hmm_2}
-
 ldhmm.calc_stats_from_obs(hd, drop=11)
 ldhmm.oxford_man_plot_obs(hd, insert.plot = FALSE)
-
-
-```
-
-```{r hmm_3}
-ldhmm.plot_spx_vix_obs(hd, end.date = as.Date("2019-02-14"),insert.plot = FALSE)
-
 ```
 
 
 #Part 4. Next steps
 
 Considering all the factors that impact the movement of stocks the key outcome is that predicting the movement is incredibly complicated task. Stock movements rely on a lot more than simply the factors captured in the data - sentiment analysis, market movements, political events - so our model was unlikely to be able to predict much of the variance.
+
+As of next steps to furthe improve the model the work could be done in the following directions:
+- Data
+Data could be enriched with  
+- Math and algorithms
+- Computational power
+
 
 
