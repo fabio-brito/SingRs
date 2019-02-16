@@ -591,20 +591,26 @@ We should also consider the robustness of our analysis as we change the clusteri
 
 **Answers**
 
-1 - Statistically, the elbow for the plot of distances can be observed around 5 and 6 segments. Beyond that, the distances are not signifcation to justify the creation of more clusters. Interpretation and business wise, we attempted clustering with 3, 4, 5, and 6 segments and found that 5 segments present the most cohesive picture in terms of deferring attitudes and motivations towards boating.  
+1 - Statistically, the elbow for the plot of distances can be observed around 5 and 6 segments. Beyond that, the distances are not significant to justify the creation of more clusters. Interpretation and business wise, we attempted clustering with 3, 4, 5, and 6 segments and found that 5 segments present the most cohesive picture in terms of deferring attitudes and motivations towards boating.  
 
 2 -
-OBS: Segment letter is not tied to the segment numbers, since they rotate every time the document is Knit 
-Segment E: They see themselves as experts in terms of boat experience (Q8), the own or a looking for boats with higher HP (Q5), and will probably buy a new boat in the future (Q3)
+OBS: Segment letter is not tied to the segment numbers, since they rotate every time the document is Knit  
+OBS2: Age can potentially be a strong profiling variable. However, it is scored in the survey between 1-4, but we don't know what they represent.
 
-Segment 2:
-*
-*
-*
-*
-*
-*
-*
-*
+Segment B: They consider themselves the least experienced with boats (Q8) and own or are looking for the boats with lower HP (Q5).  
+
+Segment D: They are as experienced with boats as the population (Q8), own or are looking for the boats with highest HP (Q5), and are significantly younger than the population (Q15)
+
+Segment E: They see themselves as experts in terms of boat experience (Q8), own or are looking for boats with higher HP (Q5), and will probably buy a new boat in the future (Q3).  
+
+3 - We recommend the company to target each segment considering it most important features. 
+
+Advertising media - the segment that values adventure should be target with ads that portray excitement, adventure, handling fast boats, and maybe even thrilling scenarios. The segment that values status should be targeted with fancy scenarios showing other symbols of prestige such as expensive cars, luxury brands, etc. 
+
+Product lines - brand conscious segments can be targeted via prestigious brands differentiated from down-market brands. Vice versa, product lines targeting economy-seekers can be undifferentiated, designed for economy and scale with basic features.
+
+Marketing channels - certain segments visit a lot of dealerships to buy, indicating the company could benefit from having presence at the point of sale and bolstering dealer relationships to push their products.
+
+
 
 **You have now completed your first market segmentation project.** You can also use this report template for other data now...
