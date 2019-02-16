@@ -20,11 +20,11 @@ We  then tried several models to predict the movement of the stock, namely Rando
 Results
 Success was mixed - ADD MORE HERE
 
-Acknowledgement: Christos Oikonomou, Frederico Belo, Ahmed Guecioueur
+Acknowledgement: Christos Oikonomou, Frederico Belo, Ahmed Guecioueur  
 Reproduction of Hidden Markov Model for Financial Time Series and Its Application to S&P 500 Index by Stephen H.-T. Lihn (https://cran.r-project.org/web/packages/ldhmm/vignettes/ldhmm-spx.pdf)
 
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -153,7 +153,6 @@ plot(forecast(vix_model_arima,252))
 #Part 3. Forecasting S&P500 movement using Hidden Markov Model 
 
 ```{r hmm}
-
 ts = ldhmm.ts_log_rtn("spx", on ="days")
 sapply(0:10, function (drop) kurtosis(ldhmm.drop_outliers(ts$x, drop)))
 ldhmm.ts_abs_acf(ts$x,drop =0 , lag.max =6)
@@ -162,7 +161,7 @@ ldhmm.ts_abs_acf(ts$x,drop =10, lag.max =6)
 
 mu_1 = 0.0006
 sigma_1 = 0.01
-mu_2 = â.’0.0007
+mu_2 = 0.0007
 sigma_2 = 0.02
 m = 3
 
