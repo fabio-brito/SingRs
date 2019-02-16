@@ -65,7 +65,22 @@ data_working <- p1_data_general
 
 For the model we've created a lagged variables for yesterday (T.1), the day before yesterday (T.2) and 30 days before yesterday (T.30). 
 
+- Data dictionary
 
+сaldt - Calendar date
+ewretd - Equal-Weighted Return (includes distributions)	
+ewretx -	Equal-Weighted Return (excluding dividends)	
+spindx -	Level on S&P Composite Index	
+sprtrn -	Return on S&P Composite Index	
+totcnt -	Total Market Count	
+totval -	Total Market Value	
+usdcnt -	Count of Securities Used	
+usdval -	Market Value of Securities Used	
+vwretd -	Value-Weighted Return (includes distributions)	
+vwretx -	Value-Weighted Return (excluding dividends)
+chusdval - Change in usdval
+vol - Volatility calculated as 30-days average volatility
+Movement - index movement (if 1 index went up, 0 - down)
 
 
 ###Split the data into testing and training
