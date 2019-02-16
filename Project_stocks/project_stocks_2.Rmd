@@ -6,11 +6,19 @@ date: "February 16, 2019"
 
 ##Introduction
 
-- Business objective
-- Process
-- Data
-- Logic
-- etc
+Business objective
+We are seeing whether we can predict the movement of the S&P 500 index based on a number of factors at T-30 days, T-2 days and T-1 day.
+
+Data
+We downloaded S&P data from CRSP, the Wharton data platform for financial data.
+
+Process
+We began by downloading and cleaning the data, and splitting it into testing and training. 
+
+We  then tried several models to predict the movement of the stock, namely Random Forest, an ETS Arima model, and finally the Hidden Markov Model, and compared the results of each. 
+
+Results
+Success was mixed - ADD MORE HERE
 
 Acknowledgement: Christos Oikonomou, Frederico Belo, Ahmed Guecioueur
 Reproduction of Hidden Markov Model for Financial Time Series and Its Application to S&P 500 Index by Stephen H.-T. Lihn (https://cran.r-project.org/web/packages/ldhmm/vignettes/ldhmm-spx.pdf)
@@ -37,7 +45,7 @@ library(scales)
 ```
 
 #Part 1. Prediction of S&P500 movement using Random Forest 
-
+## Load data
 ```{r data_loading}
 p1_data_general <- read.csv("sp500_master_woT0.csv")
 data_working <- p1_data_general
@@ -161,7 +169,7 @@ ldhmm.ts_abs_acf(ts$x,drop =10, lag.max =6)
 
 mu_1 = 0.0006
 sigma_1 = 0.01
-mu_2 = âˆ’0.0007
+mu_2 = â.’0.0007
 sigma_2 = 0.02
 m = 3
 
@@ -185,6 +193,8 @@ ldhmm.plot_spx_vix_obs(hd, end.date = as.Date("2019-02-14"),insert.plot = FALSE)
 ```
 
 
-
-
 #Part 4. Lessons learned
+
+Predicting the movement of a stock is difficult! This makes sense, as stock movements rely on a lot more than simply the factors captured in the data - sentiment analysis, market movements, political events - so our model was unlikely to be able to predict much of the variance.
+
+
